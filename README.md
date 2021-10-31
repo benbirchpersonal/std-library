@@ -1,4 +1,4 @@
-# better-string-implementatio
+# better-string-implementation
 This is a c++ string implentation which specializes in dealing with small strings.🧵
 
 
