@@ -28,11 +28,9 @@ SOFTWARE.
 
 #include <memory>
 #include <stdio.h>
-
-//#define DEBUG
-
-// preprocessor
-#define MAX(a, b) ((a) > (b) ? (a) : (b))
+#include <stdexcept>
+#include <stdexcept>
+#include <cassert>
 
 // const values
 constexpr auto MAX_SIZE = 100;
@@ -40,12 +38,21 @@ constexpr auto MAX_SIZE = 100;
 // operation buffer, the buffer used for operations
 static char OPERATION_BUFFER[MAX_SIZE];
 
+// forward declarations
+
+class str;
+inline void printf(str& string);
+inline size_t strlen(str string);
+template<class T> inline int strcmp(str& string, T& string2);
+template<class T> inline int strncmp(str& string, T& string2, size_t n);
+template<class T> inline int strstr(str& string, T& searchString);
+template<class T> inline str& strcat(str& string1, T& string2);
 
 // DECL
 class str {
 private:
 	char _data[MAX_SIZE];
-	unsigned short _length;
+	size_t _length;
 
 public:
 	// constructors
@@ -63,10 +70,10 @@ public:
 	void operator=(str& otherString);
 	void operator=(const char* otherString);
 
-	str operator+(str& otherString);
-	str operator+(str otherString);
-	str operator+(const char* otherString);
-	str operator+(char otherString);
+	template<class T>
+	str operator+(T otherString);
+	template<class T>
+	str operator+(T& otherString);
 
 	void operator+=(str otherString);
 	void operator+=(const char* otherString);
@@ -105,6 +112,7 @@ private:
 	void internalUpdlen();
 	void internalInsertString(char* dest, int start, char* src);
 	void cMemSet(void* mem, size_t sizeInChars, char chr);
+	
 };
 
 // IMPL
@@ -114,15 +122,22 @@ Default Constructor,
 Creates an empty string.
  */
 inline str::str() {
+#ifdef DEBUG
+	printf("\n[empty] created \n");
+#endif
 	this->_length = 0;
 	this->_data[0] = '\0';
 }
 
 /**
 Default Constructor,
-Creates an empty string.
+initializes from a char
+@param char
  */
 inline str::str(char x) {
+#ifdef DEBUG
+	printf("\n[%c] created \n", x);
+#endif
 	this->_length = 1;
 	this->_data[0] = x;
 	this->_data[1] = '\0';
@@ -216,45 +231,32 @@ void str::operator=(const char* otherString)
 concatenates string with other string
 @param str& concatString
  */
-str str::operator+(str& otherString)
+template<class T>
+str str::operator+(T& otherString)
 {
+	assert(strlen(*this) + strlen(otherString) < MAX_SIZE);
 	str x = this->_data;
-	x._length = this->_length;
+	x._length = strlen(*this);
 	x += otherString;
 	return x;
 }
 
-inline str str::operator+(str otherString)
-{
-	str x = this->_data;
-	x._length = this->_length;
-	x += otherString;
-	return x;
-}
+
 
 /**
-concatenates string with const char*
-@param const char* concatString
+concatenates string with other string
+@param str& concatString
  */
-str str::operator+(const char* otherString)
+template<class T>
+str str::operator+(T otherString)
 {
+	assert(strlen(*this) + strlen(otherString) < MAX_SIZE);
 	str x = this->_data;
-	x._length = this->_length;
+	x._length = strlen(*this);
 	x += otherString;
 	return x;
 }
 
-/**
-concatenates string with char
-@param char concatChar
- */
-str str::operator+(char otherString)
-{
-	str x = this->_data;
-	x._length = this->_length;
-	x += otherString;
-	return x;
-}
 
 /**
 concatenates 1 character with += functionality,
@@ -263,9 +265,10 @@ modifies original string
  */
 void str::operator+=(str otherString)
 {
+	assert((otherString._length) >= 1);
 	otherString._data[MAX_SIZE - 1] = '\0';
 	internalUpdlen();
-	internalInsertString(this->_data, this->_length, otherString._data);
+	internalInsertString(this->_data, strlen(*this), otherString._data);
 	this->_data[MAX_SIZE - 1] = '\0';
 }
 
@@ -276,6 +279,8 @@ modifies original string
  */
 void str::operator+=(const char* otherString)
 {
+	assert(otherString != nullptr);
+	assert(strlen(otherString) >= 1);
 	strncpy_s(OPERATION_BUFFER, otherString, MAX_SIZE);
 	OPERATION_BUFFER[MAX_SIZE - 1] = '\0';
 	internalUpdlen();
@@ -291,7 +296,7 @@ modifies original string
  */
 inline void str::operator+=(char otherString)
 {
-	if (this->length() < 100) {
+	if (strlen(*this) < 100) {
 		this->_data[_length] = otherString;
 		this->_data[_length + 1] = '\0';
 		this->_length++;
@@ -304,9 +309,10 @@ returns index at which the substring x occurs
  */
 inline int str::containsAt(str& x)
 {
-	int xlen = x._length;
+	assert(strlen(x) >= 1);
+	int xlen = strlen(x);
 	int foundCount = 0;
-	for (size_t i = 0; i < this->_length; i++)
+	for (size_t i = 0; i < strlen(*this); i++)
 	{
 		if (this->_data[i] == x._data[foundCount]) {
 			foundCount++;
@@ -326,9 +332,11 @@ returns index at which the substring x occurs
  */
 inline int str::containsAt(const char* x)
 {
+	assert(x != nullptr);
+	assert(strlen(x) >= 1);
 	int xlen = strlen(x);
 	int foundCount = 0;
-	for (size_t i = 0; i < this->_length; i++)
+	for (size_t i = 0; i < strlen(*this); i++)
 	{
 		if (this->_data[i] == x[foundCount]) {
 			foundCount++;
@@ -348,20 +356,7 @@ returns whether the substring x occurs in the string
  */
 inline bool str::contains(const char* x)
 {
-	int xlen = strlen(x);
-	int foundCount = 0;
-	for (size_t i = 0; i < this->_length; i++)
-	{
-		if (this->_data[i] == x[foundCount]) {
-			foundCount++;
-		}
-		else
-			foundCount = 0;
-
-		if (foundCount == xlen)
-			return true;
-	}
-	return false;
+	return containsAt(x) != 0;
 }
 
 /**
@@ -371,10 +366,9 @@ returns a substring of given position and size
  */
 inline str str::substr(size_t start, size_t length)
 {
-	if (start + length > this->length()) {
-		str tmp = OPERATION_BUFFER;
-		return tmp;
-	}
+	assert(start + length <= strlen(*this));
+	assert(length >= 1);
+
 	int x = 0;
 	for (size_t i = start; i < length; i++, x++)
 	{
@@ -392,9 +386,11 @@ returns whether the substring x occurs in the string
  */
 inline bool str::contains(str& x)
 {
-	int xlen = x._length;
+	assert(this->_length >= strlen(x));
+	assert(strlen(x) >= 1);
+	int xlen = strlen(x);
 	int foundCount = 0;
-	for (size_t i = 0; i < this->_length; i++)
+	for (size_t i = 0; i < strlen(*this); i++)
 	{
 		if (this->_data[i] == x._data[foundCount]) {
 			foundCount++;
@@ -407,14 +403,14 @@ inline bool str::contains(str& x)
 	}
 	return false;
 }
-
+#define MAX(a, b) ((a) > (b) ? (a) : (b))
 /**
 returns 0 if strings are equal
 @param str& stringCmp
  */
 inline int str::compare(str& x)
 {
-	for (size_t i = 0; i < MAX(this->_length, x._length); i++)
+	for (size_t i = 0; i < MAX(strlen(*this), strlen(x)); i++)
 	{
 		if (this->_data[i] != x._data[i])
 			return (int)this->_data[i] - (int)x._data[i];
@@ -428,7 +424,8 @@ returns 0 if strings are equal
  */
 inline int str::compare(const char* x)
 {
-	for (size_t i = 0; i < MAX(this->_length, strlen(x)); i++)
+	assert(x != nullptr);
+	for (size_t i = 0; i < MAX(strlen(*this), strlen(x)); i++)
 	{
 		if (this->_data[i] != x[i])
 			return (int)this->_data[i] - (int)x[i];
@@ -443,6 +440,7 @@ returns 0 if strings are equal up to n length
  */
 inline int str::compareUntil(str& x, size_t n)
 {
+	assert(n < (strlen(x)));
 	for (size_t i = 0; i < n; i++)
 	{
 		if (this->_data[i] != x._data[i])
@@ -458,6 +456,7 @@ returns 0 if strings are equal up to n length
  */
 inline int str::compareUntil(const char* x, size_t n)
 {
+	assert(n < strlen(x));
 	for (size_t i = 0; i < n; i++)
 	{
 		if (this->_data[i] != x[i])
@@ -484,29 +483,22 @@ returns the numbers of segments the string has been split into
  */
 inline int str::splitBy(str* stringArray, char x)
 {
-	int splitCount = 0;
-	for (size_t i = 0; i < this->_length; i++)
-	{
-		if (i == this->_length - 1 || this->_data[i] == x)
-			splitCount++;
-	}
 	size_t splitIndex = 0;
 	size_t splitSize = 0;
-	for (size_t i = 0; i < this->_length; i++)
+	for (size_t i = 0; i < strlen(*this); i++)
 	{
 		if (this->_data[i] != x) {
 			stringArray[splitIndex] += this->_data[i];
 			splitSize++;
+			continue;
 		}
-
-		if (this->_data[i] == x) {
-			stringArray[splitIndex]._data[splitSize] = '\0';
-			splitIndex++;
-			splitSize = 0;
-		}
+		stringArray[splitIndex]._data[splitSize] = '\0';
+		splitIndex++;
+		splitSize = 0;
 	}
+
 	stringArray[splitIndex]._data[splitSize] = '\0';
-	return splitCount;
+	return splitIndex + 1;
 }
 
 /**
@@ -516,7 +508,7 @@ returns a pointer to a new string without the given character
 inline str str::remove(char x)
 {
 	int bufIndex = 0;
-	for (size_t i = 0; i < this->_length; i++)
+	for (size_t i = 0; i < strlen(*this); i++)
 	{
 		if (this->_data[i] != x) {
 			OPERATION_BUFFER[bufIndex] = this->_data[i];
@@ -524,7 +516,7 @@ inline str str::remove(char x)
 		}
 	}
 	OPERATION_BUFFER[bufIndex + 1] = '\0';
-	str ret = str(OPERATION_BUFFER);
+	str ret = OPERATION_BUFFER;
 	cMemSet(OPERATION_BUFFER, bufIndex + 1, 0);
 	return ret;
 }
@@ -535,8 +527,9 @@ returns a new string, removing the given index
  */
 inline str str::removeAt(size_t x)
 {
-	int bufIndex = 0;
-	for (size_t i = 0; i < this->_length; i++)
+	assert(x <= strlen(*this));
+	size_t bufIndex = 0;
+	for (size_t i = 0; i < strlen(*this); i++)
 	{
 		if (i != x) {
 			OPERATION_BUFFER[bufIndex] = this->_data[i];
@@ -544,7 +537,7 @@ inline str str::removeAt(size_t x)
 		}
 	}
 	OPERATION_BUFFER[bufIndex + 1] = '\0';
-	str ret = str(OPERATION_BUFFER);
+	str ret = OPERATION_BUFFER;
 	cMemSet(OPERATION_BUFFER, bufIndex + 1, 0);
 	return ret;
 }
@@ -556,8 +549,9 @@ returns a new string, removing the range between the given index and size
  */
 inline str str::removeRange(size_t x, size_t size)
 {
-	int bufIndex = 0;
-	for (size_t i = 0; i < this->_length; i++)
+	assert(strlen(*this) >= size);
+	size_t bufIndex = 0;
+	for (size_t i = 0; i < strlen(*this); i++)
 	{
 		if (!(i > x && i <= x + size)) {
 			OPERATION_BUFFER[bufIndex] = this->_data[i];
@@ -582,6 +576,7 @@ inline const char* str::c_str()
 returns the length of the string
  */
 inline size_t str::length() {
+	assert(_length >= 0);
 	return _length;
 }
 
@@ -600,6 +595,11 @@ void str::internalUpdlen() {
 
 void str::internalInsertString(char* dest, int start, char* src) {
 	int x = 0;
+	assert(start > 0);
+	assert(src != nullptr);
+
+
+
 	for (size_t i = start; i < MAX_SIZE; i++, x++)
 	{
 		dest[i] = src[x];
@@ -608,11 +608,11 @@ void str::internalInsertString(char* dest, int start, char* src) {
 	}
 }
 
-void str::cMemSet(void* mem, size_t sizeInChars, char chr) {
+void str::cMemSet(void* mem, size_t sizeInChars, char byte) {
 	char* memchar = (char*)mem;
 	for (size_t i = 0; i < sizeInChars; i++)
 	{
-		memchar[i] = chr;
+		memchar[i] = byte;
 	}
 }
 
@@ -656,7 +656,7 @@ inline int strstr(str& string, T& searchString)
 returns length of string
 @param str& string
  */
-inline int strlen(str& string)
+inline size_t strlen(str string)
 {
 	return string.length();
 }
