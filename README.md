@@ -1,8 +1,9 @@
 # better-string-implementation
-This is a c++ string implentation which specializes in dealing with small strings.🧵
+This is a Header-only c++ string implentation which specializes in dealing with small strings.🧵
 
 
 ## Usage ⌨
+
 ### Instantiation 
 A string can be instanciated through a `char`, `const char*`, `str&`, or `shared_ptr<str>`.
   
@@ -57,6 +58,12 @@ int main()
 	printf("world occurs at the index %i!", strstr(x, z));
 }
 ```
+
+
+All of the functions have detialed descriptions of their functions and parameters.
+
+![image](https://user-images.githubusercontent.com/93481691/139591696-ab8584c4-4288-410d-beb3-e20f586ae139.png)
+
 
 ## Contributions
 Please report any bugs, Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
