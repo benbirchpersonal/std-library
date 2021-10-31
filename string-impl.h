@@ -68,7 +68,7 @@ public:
 	str operator+(const char* otherString);
 	str operator+(char otherString);
 
-	void operator+=(str& otherString);
+	void operator+=(str otherString);
 	void operator+=(const char* otherString);
 	void operator+=(char otherString);
 
@@ -261,14 +261,7 @@ concatenates 1 character with += functionality,
 modifies original string
 @param char concatChar
  */
-
-
-/**
-concatenates with += functionality,
-modifies original string
-@param str& concatString
- */
-void str::operator+=(str& otherString)
+void str::operator+=(str otherString)
 {
 	otherString._data[MAX_SIZE - 1] = '\0';
 	internalUpdlen();
@@ -637,17 +630,6 @@ inline int strcmp(str& string, T& string2)
 }
 
 /**
-returns 0 if strings are equal
-@param str& / const char* / char[] string2
-@param str& string
- */
-template<class T>
-inline int strcmp(T& string, str& string2)
-{
-	return string2.compare(string);
-}
-
-/**
 returns 0 if strings are equal up to n length
 @param str& string
 @param str& / const char* / char[] string2
@@ -658,16 +640,6 @@ inline int strncmp(str& string, T& string2, size_t n)
 	return string.compareUntil(string2, n);
 }
 
-/**
-returns 0 if strings are equal up to n length
-@param str& / const char* / char[] string
-@param str& string2
- */
-template<class T>
-inline int strncmp(T& string, str& string2, size_t n)
-{
-	return string2.compareUntil(string, n);
-}
 
 /**
 returns index of first string difference
@@ -699,15 +671,6 @@ inline str& strcat(str& string1, T& string2) {
 	return string1 + string2;
 }
 
-/**
-concatenates the strings
-@param str& / const char* / char[] string1
-@param str& string2
- */
-template<class T>
-inline str& strcat(T& string1, str& string2) {
-	return string2 + string1;
-}
 
 inline void printf(str &string) {
 	printf(string.c_str());
