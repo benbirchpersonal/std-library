@@ -1,4 +1,4 @@
-# better-string-implementation
+# string-impl
 This is a Header-only c++ string implentation which specializes in dealing with small strings.🧵
 
 
