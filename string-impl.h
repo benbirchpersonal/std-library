@@ -25,28 +25,25 @@ SOFTWARE.
 
 #ifndef BETTERSTRING_H
 #define BETTERSTRING_H
-
 #include <memory>
 #include <stdio.h>
-#include <stdexcept>
-#include <stdexcept>
 #include <cassert>
 
-// const values
+// string max length
 constexpr auto MAX_SIZE = 100;
 
-// operation buffer, the buffer used for operations
 static char OPERATION_BUFFER[MAX_SIZE];
 
 // forward declarations
 
 class str;
 inline void printf(str& string);
+inline void printf(str string);
 inline size_t strlen(str string);
 template<class T> inline int strcmp(str& string, T& string2);
 template<class T> inline int strncmp(str& string, T& string2, size_t n);
 template<class T> inline int strstr(str& string, T& searchString);
-template<class T> inline str& strcat(str& string1, T& string2);
+template<class T> inline str strcat(str& string1, T& string2);
 
 // DECL
 class str {
@@ -68,12 +65,13 @@ public:
 
 	// operators
 	void operator=(str& otherString);
+	void operator=(str otherString);
 	void operator=(const char* otherString);
 
 	template<class T>
 	str operator+(T otherString);
-	template<class T>
-	str operator+(T& otherString);
+	//template<class T>
+	//str operator+(T& otherString);
 
 	void operator+=(str otherString);
 	void operator+=(const char* otherString);
@@ -219,6 +217,14 @@ void str::operator=(str& otherString)
 	memcpy_s(this, sizeof(str), &otherString, sizeof(str));
 }
 /**
+copies string into string
+@param str& copiedString
+ */
+void str::operator=(str otherString)
+{
+	memcpy_s(this, sizeof(str), &otherString, sizeof(str));
+}
+/**
 copies const char* value into string
 @param const char* copiedString
  */
@@ -231,6 +237,7 @@ void str::operator=(const char* otherString)
 concatenates string with other string
 @param str& concatString
  */
+/*
 template<class T>
 str str::operator+(T& otherString)
 {
@@ -240,7 +247,7 @@ str str::operator+(T& otherString)
 	x += otherString;
 	return x;
 }
-
+*/
 
 
 /**
@@ -310,6 +317,7 @@ returns index at which the substring x occurs
 inline int str::containsAt(str& x)
 {
 	assert(strlen(x) >= 1);
+	assert(strlen(x) < strlen(*this));
 	int xlen = strlen(x);
 	int foundCount = 0;
 	for (size_t i = 0; i < strlen(*this); i++)
@@ -334,6 +342,7 @@ inline int str::containsAt(const char* x)
 {
 	assert(x != nullptr);
 	assert(strlen(x) >= 1);
+	assert(strlen(x) < strlen(*this));
 	int xlen = strlen(x);
 	int foundCount = 0;
 	for (size_t i = 0; i < strlen(*this); i++)
@@ -667,12 +676,15 @@ concatenates the strings
 @param str& / const char* / char[] string2
  */
 template<class T>
-inline str& strcat(str& string1, T& string2) {
-	return string1 + string2;
+inline str strcat(str& string1, T& string2) {
+	return string1 + str(string2);
 }
 
 
 inline void printf(str &string) {
+	printf(string.c_str());
+}
+inline void printf(str string) {
 	printf(string.c_str());
 }
 
