@@ -37,7 +37,6 @@ static char OPERATION_BUFFER[MAX_SIZE];
 // forward declarations
 
 class str;
-inline void printf(str& string);
 inline void printf(str string);
 inline size_t strlen(str string);
 template<class T> inline int strcmp(str& string, T& string2);
@@ -680,10 +679,6 @@ inline str strcat(str& string1, T& string2) {
 	return string1 + str(string2);
 }
 
-
-inline void printf(str &string) {
-	printf(string.c_str());
-}
 inline void printf(str string) {
 	printf(string.c_str());
 }
