@@ -91,7 +91,7 @@ public:
 	int compareUntil(const char* x, size_t n);
 
 	str substr(size_t start, size_t length);
-	
+
 	int splitBy(str* stringArray, char x);
 
 	// removers
@@ -109,7 +109,7 @@ private:
 	void internalUpdlen();
 	void internalInsertString(char* dest, int start, char* src);
 	void cMemSet(void* mem, size_t sizeInChars, char chr);
-	
+
 };
 
 // IMPL
@@ -122,7 +122,7 @@ inline str::str() {
 #ifdef DEBUG
 	printf("\n[empty] created \n");
 #endif
-	this->_length = 0;
+	this->_length = 1;
 	this->_data[0] = '\0';
 }
 
@@ -230,29 +230,30 @@ copies const char* value into string
 void str::operator=(const char* otherString)
 {
 	memcpy_s(this->_data, sizeof(char) * MAX_SIZE, otherString, sizeof(otherString));
+	_length = strlen(otherString);
 }
 
 /**
 concatenates string with other string
 @param str& concatString
  */
-/*
-template<class T>
-str str::operator+(T& otherString)
-{
-	assert(strlen(*this) + strlen(otherString) < MAX_SIZE);
-	str x = this->_data;
-	x._length = strlen(*this);
-	x += otherString;
-	return x;
-}
-*/
-
-
-/**
-concatenates string with other string
-@param str& concatString
+ /*
+ template<class T>
+ str str::operator+(T& otherString)
+ {
+	 assert(strlen(*this) + strlen(otherString) < MAX_SIZE);
+	 str x = this->_data;
+	 x._length = strlen(*this);
+	 x += otherString;
+	 return x;
+ }
  */
+
+
+ /**
+ concatenates string with other string
+ @param str& concatString
+  */
 template<class T>
 str str::operator+(T otherString)
 {
@@ -577,7 +578,8 @@ returns a const char*
  */
 inline const char* str::c_str()
 {
-	_data[MAX_SIZE - 1] = '\0';
+	assert(_length < MAX_SIZE);
+	_data[_length] = '\0';
 	return _data;
 }
 /**
