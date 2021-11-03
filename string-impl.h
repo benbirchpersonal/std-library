@@ -28,10 +28,9 @@ SOFTWARE.
 #include <memory>
 #include <stdio.h>
 #include <cassert>
-
+#include "array-impl.h"
 // string max length
 constexpr auto MAX_SIZE = 100;
-
 static char OPERATION_BUFFER[MAX_SIZE];
 
 // forward declarations
@@ -75,6 +74,8 @@ public:
 	void operator+=(str otherString);
 	void operator+=(const char* otherString);
 	void operator+=(char otherString);
+
+	char operator[](size_t index);
 
 	// finders
 	int containsAt(str& x);
@@ -231,6 +232,7 @@ void str::operator=(const char* otherString)
 {
 	memcpy_s(this->_data, sizeof(char) * MAX_SIZE, otherString, sizeof(otherString));
 	_length = strlen(otherString);
+	this->_data[_length] = '\0';
 }
 
 /**
