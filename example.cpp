@@ -2,7 +2,7 @@
 #define ARRAY
 #include "include.h"
 int main() {
-	arr<int> x (6);
-	x[4] = 5;
-	printf("%i", x[4]);
+	arr<str> s = { "test","test","test" };
+	printf("%s, %s, %s", s[0].c_str(), s[1].c_str(), s[2].c_str());
+
 }
