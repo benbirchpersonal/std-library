@@ -6,11 +6,12 @@
 #include <stdio.h>
 #include <cassert>
 #include "string-impl.h"
+#include <initializer_list>
 constexpr size_t MAX_ARRAYSIZE = 100;
 static char ARRAY_OPERATION_BUFFER[MAX_ARRAYSIZE];
 
 
-template<class _T>
+template <class _T>
 class arr {
 public:
 	// constructors
@@ -18,6 +19,7 @@ public:
 	* defualt constructor, type specified in template argument list <here>()
 	*/
 	arr(size_t size);
+	arr(std::initializer_list<_T> _List);
 	~arr();
 	// operators
 
@@ -25,7 +27,6 @@ public:
 	* index access
 	*/
 	_T& operator[](size_t i);
-
 	// getters
 
 	size_t count();
@@ -60,8 +61,21 @@ inline arr<_T>::arr(size_t size)
 	_ArrayLocaton = malloc(sizeof(_T) * _ArraySize);
 }
 
-template<class T>
-inline arr<T>::~arr()
+template<class _T>
+inline arr<_T>::arr(std::initializer_list<_T> test)
+{
+	assert(test.size() < MAX_ARRAYSIZE);
+	_ArraySize = test.size();
+	_ArrayLocaton = malloc(sizeof(_T) * _ArraySize);
+	for (size_t i = 0; i < _ArraySize; i++)
+	{
+		*((char*)_ArrayLocaton + (sizeof(_T) * i)) = _T(test.begin() + i);
+	}
+}
+
+
+template<class _T>
+inline arr<_T>::~arr()
 {
 	free(_ArrayLocaton);
 }
@@ -158,8 +172,6 @@ inline void arr<_T>::swap(size_t index1, size_t index2)
 	free(temp);
 
 }
-
-
 
 
 
