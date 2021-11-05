@@ -30,8 +30,7 @@ SOFTWARE.
 #include <cassert>
 
 // string max length
-constexpr auto MAX_SIZE = 100;
-
+static const uint16_t MAX_SIZE = 100;
 static char OPERATION_BUFFER[MAX_SIZE];
 
 // forward declarations
@@ -39,10 +38,10 @@ static char OPERATION_BUFFER[MAX_SIZE];
 class str;
 inline void printf(str string);
 inline size_t strlen(str string);
-template<class T> inline int strcmp(str& string, T& string2);
-template<class T> inline int strncmp(str& string, T& string2, size_t n);
-template<class T> inline int strstr(str& string, T& searchString);
-template<class T> inline str strcat(str& string1, T& string2);
+template<class _T> inline int strcmp(str& string, _T& string2);
+template<class _T> inline int strncmp(str& string, _T& string2, size_t n);
+template<class _T> inline int strstr(str& string, _T& searchString);
+template<class _T> inline str strcat(str& string1, _T& string2);
 
 // DECL
 class str {
@@ -67,14 +66,18 @@ public:
 	void operator=(str otherString);
 	void operator=(const char* otherString);
 
-	template<class T>
-	str operator+(T otherString);
+	bool operator==(str otherString);
+
+	template<class _T>
+	str operator+(_T otherString);
 	//template<class T>
 	//str operator+(T& otherString);
 
 	void operator+=(str otherString);
 	void operator+=(const char* otherString);
 	void operator+=(char otherString);
+	
+	char operator[](size_t index);
 
 	// finders
 	int containsAt(str& x);
@@ -148,6 +151,7 @@ Copies a string from non-const value
  */
 inline str::str(str& copyString)
 {
+	assert(&copyString != nullptr);
 #ifdef DEBUG
 	printf("\n[%s] copied \n", _data);
 #endif
@@ -162,6 +166,7 @@ Copies a string from const value
  */
 inline str::str(const str& x)
 {
+	assert(&x != nullptr);
 #ifdef DEBUG
 	printf("\ncopied \n");
 #endif
@@ -201,6 +206,7 @@ Constructor from const char*
  */
 inline str::str(const char* x)
 {
+	assert(x != nullptr);
 	strcpy_s(this->_data, x);
 	internalUpdlen();
 	this->_data[this->_length] = '\0';
@@ -213,6 +219,7 @@ copies string into string
  */
 void str::operator=(str& otherString)
 {
+	assert(&otherString != nullptr);
 	memcpy_s(this, sizeof(str), &otherString, sizeof(str));
 }
 /**
@@ -221,6 +228,7 @@ copies string into string
  */
 void str::operator=(str otherString)
 {
+	assert(&otherString != nullptr);
 	memcpy_s(this, sizeof(str), &otherString, sizeof(str));
 }
 /**
@@ -229,6 +237,7 @@ copies const char* value into string
  */
 void str::operator=(const char* otherString)
 {
+	assert(otherString != nullptr);
 	memcpy_s(this->_data, sizeof(char) * MAX_SIZE, otherString, sizeof(otherString));
 	_length = strlen(otherString);
 	this->_data[_length] = '\0';
@@ -249,6 +258,13 @@ concatenates string with other string
 	 return x;
  }
  */
+
+
+inline bool str::operator==(str otherString)
+{
+	return(!(this->compare(otherString)) == 0);
+}
+
 
 
  /**
@@ -318,7 +334,8 @@ returns index at which the substring x occurs
 inline int str::containsAt(str& x)
 {
 	assert(strlen(x) >= 1);
-	assert(strlen(x) < strlen(*this));
+	assert(&x != nullptr);
+	assert(strlen(x) <= strlen(*this));
 	int xlen = strlen(x);
 	int foundCount = 0;
 	for (size_t i = 0; i < strlen(*this); i++)
@@ -634,8 +651,8 @@ returns 0 if strings are equal
 @param str& string
 @param str& / const char* / char[] string2
  */
-template<class T>
-inline int strcmp(str& string, T& string2)
+template<class _T>
+inline int strcmp(str& string, _T& string2)
 {
 	return string.compare(string2);
 }
@@ -645,8 +662,8 @@ returns 0 if strings are equal up to n length
 @param str& string
 @param str& / const char* / char[] string2
  */
-template<class T>
-inline int strncmp(str& string, T& string2, size_t n)
+template<class _T>
+inline int strncmp(str& string, _T& string2, size_t n)
 {
 	return string.compareUntil(string2, n);
 }
@@ -657,8 +674,8 @@ returns index of first string difference
 @param str& string
 @param str& / const char* / char[] string2
  */
-template<class T>
-inline int strstr(str& string, T& searchString)
+template<class _T>
+inline int strstr(str& string, _T& searchString)
 {
 	return string.containsAt(searchString);
 }
@@ -677,8 +694,8 @@ concatenates the strings
 @param str& string1
 @param str& / const char* / char[] string2
  */
-template<class T>
-inline str strcat(str& string1, T& string2) {
+template<class _T>
+inline str strcat(str& string1, _T& string2) {
 	return string1 + str(string2);
 }
 
