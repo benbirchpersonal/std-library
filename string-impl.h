@@ -1,8 +1,7 @@
 #ifndef		STRINGIMPL_H
 #define		STRINGIMPL_H
-#include	<memory>
-#include	<stdio.h>
-#include	<cassert>
+
+#include "include.h"
 
 // string max length
 #define		MAX(a, b)	((a) > (b) ? (a) : (b))
