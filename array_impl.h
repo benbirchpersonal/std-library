@@ -1,5 +1,6 @@
 #ifndef		ARRAYIMPL_H
 #define		ARRAYIMPL_H
+
 #include	<memory>
 #include	<cassert>
 #include	<initializer_list>
@@ -13,7 +14,6 @@ static char ARRAY_OPERATION_BUFFER[MAX_ARRAYSIZE];
 template <class _T>
 class arr {
 public:
-	
 	constexpr					arr(size_t size)						noexcept;
 	constexpr					arr()									noexcept;
 	constexpr					arr(std::initializer_list<_T> _List)	noexcept;
@@ -63,6 +63,9 @@ constexpr arr<_T>::arr(size_t size) noexcept
 	_ArrayLocation	=		(_T*)malloc(_ElemSize * _ArraySize);
 }
 
+/*
+* Constructor
+*/
 template<class _T>
 constexpr arr<_T>::arr() noexcept
 {
@@ -77,6 +80,9 @@ constexpr arr<_T>::arr() noexcept
 	_ArrayLocation	=		nullptr;
 }
 
+/*
+* Constructor
+*/
 template<class _T>
 constexpr arr<_T>::arr(std::initializer_list<_T> _List) noexcept
 {
@@ -102,7 +108,9 @@ constexpr arr<_T>::arr(std::initializer_list<_T> _List) noexcept
 	}
 }
 
-
+/*
+* destrcutor
+*/
 template<class _T>
 inline arr<_T>::~arr() noexcept
 {
@@ -115,7 +123,9 @@ inline arr<_T>::~arr() noexcept
 
 
 
-
+/*
+* accesses an index of the array
+*/
 template<class _T>
 inline _T& arr<_T>::operator[](size_t i)
 {
@@ -123,20 +133,26 @@ inline _T& arr<_T>::operator[](size_t i)
 	return *((_T*)(_ArrayLocation) + i);
 }
 
-
+/*
+* returns size of array
+*/
 template<class _T>
 _NODISCARD size_t arr<_T>::count() noexcept
 {
 	return _ArraySize;
 }
-
+/*
+* returns first item in array
+*/
 template<class _T>
 _NODISCARD _T& arr<_T>::first() noexcept
 {
 	return *_ArrayLocation;
 }
 
-
+/*
+* returns last item in array
+*/
 template<class _T>
 _NODISCARD _T& arr<_T>::last() noexcept
 {
@@ -180,7 +196,10 @@ _NODISCARD int arr<_T>::findLastOf(_T search)
 	return -1;
 }
 
-
+/*
+* Returns a dynamic array of the indexes of the occurances of a value in the array
+* @param searchTerm
+*/
 template<class _T>
 _NODISCARD dynArr<size_t> arr<_T>::find(_T search)
 {
