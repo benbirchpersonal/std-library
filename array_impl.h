@@ -1,12 +1,12 @@
 #ifndef	ARRAYIMPL_H
 #define	ARRAYIMPL_H
 
-#include	<memory>
-#include	<cassert>
-#include	<initializer_list>
-#include	"dynamic-array.h"
+#include <memory>
+#include <cassert>
+#include <initializer_list>
+#include "dynamic-array.h"
 
-#define	MAX_ARRAYSIZE	100
+#define	MAX_ARRAYSIZE 100
 
 
 static char ARRAY_OPERATION_BUFFER[MAX_ARRAYSIZE];
