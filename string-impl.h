@@ -14,63 +14,68 @@ class str {
 
 public:
 	// constructors
-								str()								noexcept;
-								str(str& x)							noexcept;
-								str(char x)							noexcept;
-								str(const char* x)					noexcept;
-								str(const str& s)					noexcept;
-								~str()								noexcept;
+			str()							noexcept;
+			str(str& x)						noexcept;
+			str(char x)						noexcept;
+			str(const char* x)					noexcept;
+			str(const str& s)					noexcept;
+			~str()							noexcept;
 
-	template		<class _T>
-	_NODISCARD		str			operator+(_T otherString);
-					void		operator=(str& otherString);
-					void		operator=(str otherString);
-					void		operator=(const char* otherString);
-					bool		operator==(str otherString);
-					void		operator+=(str otherString);
-					void		operator+=(const char* otherString);
-					void		operator+=(char otherString);
-					char&		operator[](size_t index);
 	// finders
-	_NODISCARD		int			contains(str& x);
-	_NODISCARD		int			contains(const char* x);
+	_NODISCARD	int		contains(str& x)			noexcept;
+	_NODISCARD	int		contains(const char* x)			noexcept;
 	// comparers
-	_NODISCARD		int			compare(str& x);
-	_NODISCARD		int			compare(const char* x);
-	_NODISCARD		int			compareUntil(str& x, size_t n);
-	_NODISCARD		int			compareUntil(const char* x, size_t n);
-	_NODISCARD		str			substr(size_t start, size_t length);
+	_NODISCARD	int		compare(str& x)				noexcept;
+	_NODISCARD	int		compare(const char* x)			noexcept;
+	_NODISCARD	int		compareUntil(str& x, size_t n)		noexcept;
+	_NODISCARD	int		compareUntil(const char* x, size_t n)	noexcept;
+	_NODISCARD	str		substr(size_t start, size_t length)	noexcept;
 	// removers
-	_NODISCARD		str			remove(char x);
-	_NODISCARD		str			removeAt(size_t x);
-	_NODISCARD		str			removeRange(size_t x, size_t size);
-	constexpr		void		clear() noexcept;
+	_NODISCARD	str		remove(char x)				noexcept;
+	_NODISCARD	str		removeAt(size_t x)			noexcept;
+	_NODISCARD	str		removeRange(size_t x, size_t size)	noexcept;
+	constexpr	void		clear()					noexcept;
 	//misc
-	_NODISCARD		str			Xor(uint8_t key);
-	_NODISCARD		int			splitBy(str* stringArray, char x);
+	_NODISCARD	str		Xor(uint8_t key)			noexcept;
+	_NODISCARD	int		splitBy(str* stringArray, char x)	noexcept;
 	// getters and setters
-	_NODISCARD		const char* c_str();
-	_NODISCARD		size_t		length();
+	_NODISCARD	const char*	c_str()					noexcept;
+	_NODISCARD	size_t		length()				noexcept;
+
+
+	template	<class _T>
+	_NODISCARD	str		operator+(_T otherString);
+			void		operator=(str& otherString);
+			void		operator=(str otherString);
+			void		operator=(const char* otherString);
+	_NODISCARD	bool		operator==(str otherString);
+			void		operator+=(str otherString);
+			void		operator+=(const char* otherString);
+			void		operator+=(char otherString);
+	_NODISCARD	char&		operator[](size_t index);
 
 
 private:
 	// internal functions
-					void		internalUpdlen();
-					void		internalInsertString(char* dest, int start, char* src);
-					void		cMemSet(void* mem, size_t sizeInChars, char chr);
+			void		internalUpdlen();
+			void		internalInsertString(char* dest, int start, char* src);
+			void		cMemSet(void* mem, size_t sizeInChars, char chr);
 
 private:
-	char			_data[MAX_SIZE];
-	size_t			_length;
+	char		_data[MAX_SIZE];
+	size_t		_length;
 };
 
 
-inline				void		printf(str string);
-inline				size_t		strlen(str string);
-template<class _T>  int			strcmp(str& string, _T& string2);
-template<class _T>  int			strncmp(str& string, _T& string2, size_t n);
-template<class _T>  int			strstr(str& string, _T& searchString);
-template<class _T>  str			strcat(str& string1, _T& string2);
+
+
+
+inline			void		printf(str string);
+inline			size_t		strlen(str string);
+template<class _T>	int		strcmp(str& string, _T& string2);
+template<class _T>	int		strncmp(str& string, _T& string2, size_t n);
+template<class _T>	int		strstr(str& string, _T& searchString);
+template<class _T>	str		strcat(str& string1, _T& string2);
 
 
 
@@ -86,8 +91,8 @@ str::str() noexcept
 #ifdef DEBUG
 	printf("\n[empty] created \n");
 #endif
-	_length		=		1;
-	_data[0]	=		'\0';
+	_length		=	1;
+	_data[0]	=	'\0';
 }
 
 /**
@@ -100,9 +105,9 @@ str::str(char x) noexcept
 #ifdef DEBUG
 	printf("\n[%c] created \n", x);
 #endif
-	_length		=		1;
-	_data[0]	=		x;
-	_data[1]	=		'\0';
+	_length		=	1;
+	_data[0]	=	x;
+	_data[1]	=	'\0';
 }
 
 
@@ -117,8 +122,8 @@ str::str(str& copyString) noexcept
 #ifdef DEBUG
 	printf("\n[%s] copied \n", _data);
 #endif
-	rsize_t dataSize	=		sizeof(_data);
-	_length				=		copyString._length;
+	rsize_t dataSize	=	sizeof(_data);
+	_length			=	copyString._length;
 	memcpy_s(
 		_data, 
 		dataSize,
@@ -139,8 +144,8 @@ str::str(const str& x) noexcept
 	printf("\ncopied \n");
 #endif
 
-	rsize_t dataSize	=		sizeof(x._data);
-	_length				=		x._length;
+	rsize_t dataSize	=	sizeof(x._data);
+	_length			=	x._length;
 	memcpy_s(
 		_data, 
 		dataSize,
@@ -162,7 +167,7 @@ str::str(const char* x) noexcept
 	);
 
 	internalUpdlen();
-	_data[_length]	=		'\0';
+	_data[_length]		=	'\0';
 }
 
 
@@ -183,9 +188,9 @@ inline str::~str() noexcept
 
 
 
-char& str::operator[](size_t index) {
+_NODISCARD char& str::operator[](size_t index) {
 	assert (index < _length);
-	char*   test	=		(char*) _data + index;
+	char*   test		=	(char*) _data + index;
 	return *test;
 }
 
@@ -227,8 +232,8 @@ void str::operator=(const char* otherString)
 		otherString,
 		sizeof(otherString)
 	);
-	_length			=		strlen(otherString);
-	_data[_length]	=		'\0';
+	_length		=	strlen(otherString);
+	_data[_length]	=	'\0';
 }
 
 /*
@@ -236,18 +241,18 @@ concatenates string with other string
 @param str& concatString
  */
 template<class _T>
-inline str str::operator+(_T otherString)
+_NODISCARD str str::operator+(_T otherString)
 {
 	 assert (strlen(*this) + strlen(otherString) < MAX_SIZE);
-	 str x		=		_data;
-	 x._length  =		strlen(*this);
-	 x			+=		otherString;
+	 str x		=	_data;
+	 x._length	=	strlen(*this);
+	 x		+=	otherString;
 	 return x;
  }
  
-inline bool str::operator==(str otherString)
+_NODISCARD bool str::operator==(str otherString)
 {
-	return !(compare(otherString) == 0);
+	return (compare(otherString) == 0);
 }
 
 /**
@@ -258,14 +263,14 @@ modifies original string
 void str::operator+=(str otherString)
 {
 	assert (otherString._length >= 1);
-	otherString._data[MAX_SIZE - 1]		=	'\0';
+	otherString._data[MAX_SIZE - 1]	=	'\0';
 	internalUpdlen();
 	internalInsertString(
 		_data,
 		_length,
 		otherString._data
 	);
-	_data[MAX_SIZE - 1]					=	'\0';
+	_data[MAX_SIZE - 1]		=	'\0';
 }
 
 /**
@@ -283,7 +288,7 @@ void str::operator+=(const char* otherString)
 		MAX_SIZE
 	);
 
-	OPERATION_BUFFER[MAX_SIZE - 1]		=		'\0';
+	OPERATION_BUFFER[MAX_SIZE - 1]	=	'\0';
 	internalUpdlen();
 	internalInsertString(
 		_data, 
@@ -291,7 +296,7 @@ void str::operator+=(const char* otherString)
 		OPERATION_BUFFER
 	);
 
-	_data[MAX_SIZE - 1]					=		'\0';
+	_data[MAX_SIZE - 1]		=	'\0';
 	cMemSet(
 		OPERATION_BUFFER, 
 		MAX_SIZE, 
@@ -309,8 +314,8 @@ inline void str::operator+=(char otherString)
 	if (_length > MAX_SIZE - 2)
 		return; 
 
-	_data[_length]		=		otherString;
-	_data[_length + 1]	=		'\0';
+	_data[_length]		=	otherString;
+	_data[_length + 1]	=	'\0';
 	_length++;
 	
 }
@@ -320,19 +325,19 @@ returns a substring of given position and size
 @param int start
 @param int length
  */
-inline str str::substr(size_t start, size_t length)
+inline str str::substr(size_t start, size_t length) noexcept
 {
 	assert (start + length <= _length);
 	assert (length >= 1);
 
-	int	x				=		0;
+	int x			=	0;
 	for (size_t i = start; i < length; i++, x++)
 	{
 		OPERATION_BUFFER[x] = _data[i];
 	}
 
-	OPERATION_BUFFER[x] =		'\0';
-	str tmp				=		OPERATION_BUFFER;
+	OPERATION_BUFFER[x]	=	'\0';
+	str tmp			=	OPERATION_BUFFER;
 	cMemSet(
 		OPERATION_BUFFER, 
 		MAX_SIZE, 
@@ -345,10 +350,10 @@ inline str str::substr(size_t start, size_t length)
  returns index at which the substring x occurs
  @param str& substring
   */
-inline int str::contains(str& x)
+inline int str::contains(str& x) noexcept
 {
-	int xlen = x._length;
-	int foundCount = 0;
+	int xlen	=	x._length;
+	int foundCount	=	0;
 	assert (xlen >= 1);
 	assert (&x != nullptr);
 	assert (xlen <= _length);
@@ -371,10 +376,10 @@ inline int str::contains(str& x)
 returns index at which the substring x occurs
 @param str& substring
  */
-inline int str::contains(const char* x)
+inline int str::contains(const char* x) noexcept
 {
-	int xlen			=		strlen(x);
-	int foundCount		=		0;
+	int xlen		=	strlen(x);
+	int foundCount		=	0;
 	assert (xlen >= 1);
 	assert (&x != nullptr);
 	assert (xlen <= _length);
@@ -397,7 +402,7 @@ inline int str::contains(const char* x)
 returns 0 if strings are equal
 @param str& stringCmp
  */
-inline int str::compare(str& x)
+inline int str::compare(str& x) noexcept
 {
 	for (size_t i = 0; i < MAX(_length, x._length); i++)
 	{
@@ -411,7 +416,7 @@ inline int str::compare(str& x)
 returns 0 if strings are equal
 @param const char* stringCmp
  */
-inline int str::compare(const char* x)
+inline int str::compare(const char* x) noexcept
 {
 	assert (x != nullptr);
 	for (size_t i = 0; i < MAX(_length, strlen(x)); i++)
@@ -427,7 +432,7 @@ returns 0 if strings are equal up to n length
 @param str& stringCmp
 @param size_t n
  */
-inline int str::compareUntil(str& x, size_t n)
+inline int str::compareUntil(str& x, size_t n) noexcept
 {
 	assert (n < (x._length));
 	for (size_t i = 0; i < n; i++)
@@ -443,7 +448,7 @@ returns 0 if strings are equal up to n length
 @param const char* stringCmp
 @param size_t n
  */
-inline int str::compareUntil(const char* x, size_t n)
+inline int str::compareUntil(const char* x, size_t n) noexcept
 {
 	assert (n < strlen(x));
 	for (size_t i = 0; i < n; i++)
@@ -460,8 +465,8 @@ self explanatory
  */
 constexpr void str::clear() noexcept
 {
-	_data[0]		=		'\0';
-	_length			=		0;
+	_data[0]	=	'\0';
+	_length		=	0;
 }
 
 /**
@@ -470,20 +475,20 @@ returns the numbers of segments the string has been split into
 @param pointer to string array
 @param char given character
  */
-inline int str::splitBy(str* stringArray, char x)
+inline int str::splitBy(str* stringArray, char x) noexcept
 {
-	size_t splitIndex		=		0;
-	size_t splitSize		=		0;
+	size_t splitIndex	=	0;
+	size_t splitSize	=	0;
 	for (size_t i = 0; i < _length; i++)
 	{
 		if (_data[i] != x) {
-			stringArray[splitIndex]		+=	_data[i];
+			stringArray[splitIndex]	+= _data[i];
 			splitSize++;
 			continue;
 		}
 		stringArray[splitIndex]._data[splitSize] = '\0';
 		splitIndex++;
-		splitSize		=		0;
+		splitSize	=	0;
 	}
 
 	stringArray[splitIndex]._data[splitSize] = '\0';
@@ -494,9 +499,9 @@ inline int str::splitBy(str* stringArray, char x)
 returns a pointer to a new string without the given character
 @param char given character
  */
-inline str str::remove(char x)
+inline str str::remove(char x) noexcept
 {
-	int bufIndex		=		0;
+	int bufIndex			=	0;
 	for (size_t i = 0; i < _length; i++)
 	{
 		if (_data[i] != x) {
@@ -504,8 +509,8 @@ inline str str::remove(char x)
 			bufIndex++;
 		}
 	}
-	OPERATION_BUFFER[bufIndex + 1] =		'\0';
-	str ret						   =		OPERATION_BUFFER;
+	OPERATION_BUFFER[bufIndex + 1]	=	'\0';
+	str ret				=	OPERATION_BUFFER;
 	cMemSet(
 		OPERATION_BUFFER, 
 		bufIndex + 1, 
@@ -518,10 +523,10 @@ inline str str::remove(char x)
 returns a new string, removing the given index
 @param char given character
  */
-inline str str::removeAt(size_t x)
+inline str str::removeAt(size_t x) noexcept
 {
 	assert (x <= _length);
-	size_t bufIndex			=		0;
+	size_t bufIndex			=	0;
 	for (size_t i = 0; i < _length; i++)
 	{
 		if (i != x) {
@@ -529,8 +534,8 @@ inline str str::removeAt(size_t x)
 			bufIndex++;
 		}
 	}
-	OPERATION_BUFFER[bufIndex + 1]		=		'\0';
-	str ret								=		OPERATION_BUFFER;
+	OPERATION_BUFFER[bufIndex + 1]	=	'\0';
+	str ret				=	OPERATION_BUFFER;
 	cMemSet(
 		OPERATION_BUFFER, 
 		bufIndex + 1, 
@@ -544,7 +549,7 @@ returns a new string, removing the range between the given index and size
 @param char given character
 @param size_t given size
  */
-inline str str::removeRange(size_t x, size_t size)
+inline str str::removeRange(size_t x, size_t size) noexcept
 {
 	assert (_length >= size);
 	size_t bufIndex		=		0;
@@ -555,8 +560,8 @@ inline str str::removeRange(size_t x, size_t size)
 			bufIndex++;
 		}
 	}
-	OPERATION_BUFFER[bufIndex + 1]		=		'\0';
-	str ret								=		str(OPERATION_BUFFER);
+	OPERATION_BUFFER[bufIndex + 1]	=	'\0';
+	str ret				=	str(OPERATION_BUFFER);
 	cMemSet(
 		OPERATION_BUFFER, 
 		bufIndex + 1, 
@@ -568,16 +573,17 @@ inline str str::removeRange(size_t x, size_t size)
 /**
 returns a const char*
  */
-inline const char* str::c_str()
+inline const char* str::c_str() noexcept
 {
 	assert (_length < MAX_SIZE);
-	_data[_length]		=		'\0';
+	_data[_length]		=	'\0';
 	return _data;
 }
 /**
 returns the length of the string
  */
-inline size_t str::length() {
+inline size_t str::length() noexcept 
+{
 	assert (_length >= 0);
 	return _length;
 }
@@ -585,9 +591,9 @@ inline size_t str::length() {
 /*
 * xor encryption with int key
 */
-inline str str::Xor(uint8_t key)
+inline str str::Xor(uint8_t key) noexcept
 {
-	for (size_t i = 0; i < _length; i++)         
+	for (size_t i = 0; i < _length; i++)		 
 	{
 		*(_data + i) = (*(char*)(_data + i) ^ key);
 	}
@@ -597,19 +603,20 @@ inline str str::Xor(uint8_t key)
 
 // INTERNAL IMPL
 
-void str::internalUpdlen() {
+void str::internalUpdlen() 
+{
 	for (size_t i = 0; i < MAX_SIZE; i++) {
 		if (_data[i] == '\0') {
 			_length = i;
 			return;
 		}
 	}
-	_length			=		0;
+	_length		=	0;
 	return;
 }
 
 void str::internalInsertString(char* dest, int start, char* src) {
-	int x			=		0;
+	int x	=	0;
 	assert (start > 0);
 	assert (src != nullptr);
 
@@ -617,17 +624,17 @@ void str::internalInsertString(char* dest, int start, char* src) {
 
 	for (size_t i = start; i < MAX_SIZE; i++, x++)
 	{
-		dest[i]		=		src[x];
+		dest[i]		=	src[x];
 		if (src[x] == '\0')
 			return;
 	}
 }
 
 void str::cMemSet(void* mem, size_t sizeInChars, char byte) {
-	char* memchar	=		(char*)mem;
+	char* memchar		=	(char*)mem;
 	for (size_t i = 0; i < sizeInChars; i++)
 	{
-		memchar[i]	=		byte;
+		memchar[i]	=	 byte;
 	}
 }
 
@@ -691,4 +698,4 @@ void printf(str string) {
 }
 
 
-#endif /* !BETTERSTRING_H */
+#endif /* !STRINGIMPL_H */
