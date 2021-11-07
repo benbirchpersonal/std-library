@@ -69,15 +69,15 @@ constexpr arr<_T>::arr(size_t size) noexcept
 template<class _T>
 constexpr arr<_T>::arr() noexcept
 {
-	assert(size < MAX_ARRAYSIZE);
+	assert (size < MAX_ARRAYSIZE);
 
 #ifdef DEBUG
 	printf("\ncreated \n");
 #endif
 
-	_ElemSize	=	sizeof(_T);
-	_ArraySize	=	0;
-	_ArrayLocation	=	nullptr;
+	_ElemSize		=	sizeof(_T);
+	_ArraySize		=	0;
+	_ArrayLocation		=	nullptr;
 }
 
 /*
@@ -92,13 +92,13 @@ constexpr arr<_T>::arr(std::initializer_list<_T> _List) noexcept
 	printf("\ncreated \n");
 #endif
 
-	_ElemSize	=	sizeof(_T);
-	_ArraySize	=	_List.size();
-	_ArrayLocation	=	(_T*) malloc(_ElemSize * _ArraySize);
+	_ElemSize		=	sizeof(_T);
+	_ArraySize		=	_List.size();
+	_ArrayLocation		=	(_T*) malloc(_ElemSize * _ArraySize);
 
 	for (size_t i = 0; i < _ArraySize; i++)
 	{
-	_T temp	=	_T(*(_List.begin() + i));
+	_T temp			=	_T(*(_List.begin() + i));
 	memcpy_s(
 		_ArrayLocation + i,
 		_ElemSize,
@@ -171,7 +171,7 @@ _NODISCARD int arr<_T>::findFirstOf(_T search)
 {
 	for (size_t i = 0; i < _ArraySize; i++)
 	{
-	_T curr	=	*(_ArrayLocation + i);
+	_T curr		=	*(_ArrayLocation + i);
 	if (search == curr)
 		return i;
 	}
@@ -189,7 +189,7 @@ _NODISCARD int arr<_T>::findLastOf(_T search)
 {
 	for (size_t i = _ArraySize - 1; i >= 0; i--)
 	{
-	_T curr	=	* ( _ArrayLocation + i );
+	_T curr		=	* ( _ArrayLocation + i );
 	if (search == curr)
 		return i;
 	}
@@ -207,7 +207,7 @@ _NODISCARD dynArr<size_t> arr<_T>::find(_T search)
 
 	for (size_t i = 0; i < _ArraySize; i++)
 	{
-	_T curr	=	*(_ArrayLocation + i);
+	_T curr		=	*(_ArrayLocation + i);
 	if (search == curr)
 		foundArray.push(i);
 	}
@@ -252,7 +252,7 @@ inline void arr<_T>::print()
 {
 	for (size_t i = 0; i < _ArraySize; i++)
 	{
-	_T* current	=	( _ArrayLocation + i );
+	_T* current		=	( _ArrayLocation + i );
 	printf(*current);
 	printf(" ");
 	}
@@ -268,7 +268,7 @@ inline void arr<_T>::print(size_t index1, size_t index2)
 
 	for (size_t i = index1; i < _ArraySize; i++)
 	{
-	_T* current	=	 _ArrayLocation + i;
+	_T* current		=	 _ArrayLocation + i;
 	printf(*current);
 	printf(" ");
 	}
