@@ -1,25 +1,29 @@
-# string-impl
-This is a Header-only c++ string implentation which specializes in dealing with small strings.🧵
+# std-library
+This is a Headers-only c++ std-library implementation which contains strings, arrays and dynamic arrays.
 
 
 ## Usage ⌨
 
-### Instantiation 
-A string can be instanciated through a `char`, `const char*`, `str&`, or `shared_ptr<str>`.
+### Strings
+
+#### Instantiation 
+A string can be instanciated through a `char`, `const char*`, `str&`.
   
 ```c++
-#include "string-impl.h"
+#define STRING
+#include "include.h"
 
 int main(){
   str x = "hello world";
   str y = x;
 }
 ```
-### Transformations / Operations 🪓➕🔍
-Strings can be concatenated, characters removed, characters removed by index, split into a str array, and a multitude of other things. The syntax is kept as basic and minimal as possible.
+#### Transformations / Operations 🪓➕🔍
+Strings can be concatenated, characters removed, characters removed by index, split into a str array, xor'd, and a multitude of other things. The syntax is kept as basic and minimal as possible.
 For example, the output of this code: 
 ```c++
-#include "string-impl.h"
+#define STRING
+#include "include.h"
 
 int main(){
   str x = "hello world";
@@ -30,7 +34,7 @@ int main(){
 ```
 Would be `hello worldhello worldheo word`
 
-### C-Like Functions 💾
+#### C-Like Functions 💾
 
 I've implemented a number of c like functions, such as:
   - `strcmp`
@@ -42,7 +46,8 @@ I've implemented a number of c like functions, such as:
 These work the same as their C equivalents and can be used not just with str-str comparisons, but also can be used in parralell with const char* and char[].
 for example:
 ```c++
-#include "string-impl.h"
+#define STRING
+#include "include.h"
 
 int main()
 {
@@ -58,6 +63,22 @@ int main()
 	printf("world occurs at the index %i!", strstr(x, z));
 }
 ```
+### Arrays
+Arrays can contain any class type and can be instanciated empty, or with an initializer list.
+  
+```c++
+#define DYNAMIC_ARRAY
+#include "include.h"
+
+int main() {
+	arr<int> EmptyArray(5);
+	arr<int> ArrayInitializerList = { 1,2,3,4,5,5 };
+}
+```
+
+#### Transformations / Operations 🪓➕🔍
+Arrays can be searched, items swapped, and other array operations.
+
 
 
 All of the functions have detialed descriptions of their functions and parameters.
