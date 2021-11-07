@@ -1,5 +1,5 @@
-#ifndef		STRINGIMPL_H
-#define		STRINGIMPL_H
+#ifndef	STRINGIMPL_H
+#define	STRINGIMPL_H
 
 #include "include.h"
 
@@ -12,7 +12,7 @@ static char OPERATION_BUFFER[MAX_SIZE];
 class str {
 
 public:
-	// constructors
+		// constructors
 			str()							noexcept;
 			str(str& x)						noexcept;
 			str(char x)						noexcept;
@@ -20,24 +20,28 @@ public:
 			str(const str& s)					noexcept;
 			~str()							noexcept;
 
-	// finders
+		// finders
 	_NODISCARD	int		contains(str& x)			noexcept;
 	_NODISCARD	int		contains(const char* x)			noexcept;
-	// comparers
+
+		// comparers
 	_NODISCARD	int		compare(str& x)				noexcept;
 	_NODISCARD	int		compare(const char* x)			noexcept;
 	_NODISCARD	int		compareUntil(str& x, size_t n)		noexcept;
 	_NODISCARD	int		compareUntil(const char* x, size_t n)	noexcept;
 	_NODISCARD	str		substr(size_t start, size_t length)	noexcept;
-	// removers
+
+		// removers
 	_NODISCARD	str		remove(char x)				noexcept;
 	_NODISCARD	str		removeAt(size_t x)			noexcept;
 	_NODISCARD	str		removeRange(size_t x, size_t size)	noexcept;
 	constexpr	void		clear()					noexcept;
-	//misc
+
+		//misc
 	_NODISCARD	str		Xor(uint8_t key)			noexcept;
 	_NODISCARD	int		splitBy(str* stringArray, char x)	noexcept;
-	// getters and setters
+
+		// getters and setters
 	_NODISCARD	const char*	c_str()					noexcept;
 	_NODISCARD	size_t		length()				noexcept;
 
@@ -55,7 +59,7 @@ public:
 
 
 private:
-	// internal functions
+		// internal functions
 			void		internalUpdlen();
 			void		internalInsertString(char* dest, int start, char* src);
 			void		cMemSet(void* mem, size_t sizeInChars, char chr);
@@ -106,7 +110,7 @@ str::str(char x) noexcept
 #endif
 	_length		=	1;
 	_data[0]	=	x;
-	_data[1]	=	'\0';
+	_data[1]	=	'\0';					// Creates string consisting only of one char and null termination character
 }
 
 
@@ -117,13 +121,13 @@ Copies a string from non-const value
  */
 str::str(str& copyString) noexcept
 {
-	assert (&copyString != nullptr);
+	assert (&copyString != nullptr);				// copied string is nullptr
 #ifdef DEBUG
 	printf("\n[%s] copied \n", _data);
 #endif
 	rsize_t dataSize	=	sizeof(_data);
 	_length			=	copyString._length;
-	memcpy_s(
+	memcpy_s(							// Copies the string data into the new string object
 		_data, 
 		dataSize,
 		(const void*) copyString._data, 
@@ -132,21 +136,21 @@ str::str(str& copyString) noexcept
 }
 
 /**
-Copy Constructor,
+const Copy Constructor,
 Copies a string from const value
 @param const str& baseString
  */
 str::str(const str& x) noexcept
 {
-	assert (&x != nullptr);
+	assert (&x != nullptr);						// x is nullptr
 #ifdef DEBUG
 	printf("\ncopied \n");
 #endif
 
-	rsize_t dataSize	=	sizeof(x._data);
+	rsize_t dataSize	=	sizeof(x._data);	
 	_length			=	x._length;
-	memcpy_s(
-		_data, 
+	memcpy_s(							// Copies the string data into the new string object
+		_data,
 		dataSize,
 		(const void*)x._data, 
 		dataSize
@@ -159,13 +163,14 @@ Constructor from const char*
  */
 str::str(const char* x) noexcept
 {
-	assert (x != nullptr);
-	strcpy_s(
-		_data, 
-		x
+	assert (x != nullptr);						// x is nullptr
+	strncpy_s(							// copy the const char* up to the null terminating character, or max string size,
+		_data,							// whichever comes first.
+		x,
+		MAX_SIZE
 	);
 
-	internalUpdlen();
+	_length			=	strlen(x);			// ensure that the last char is a null termination character
 	_data[_length]		=	'\0';
 }
 
@@ -177,7 +182,7 @@ shows when strings go out of scope
 inline str::~str() noexcept
 {
 #ifdef DEBUG
-	printf("\n[%s] out of scope \n", _data);
+	printf("\n[%s] out of scope \n", _data);			// debug only, no need to free memory as is declared on stack.
 #endif
 }
 
@@ -188,8 +193,8 @@ inline str::~str() noexcept
 
 
 _NODISCARD char& str::operator[](size_t index) {
-	assert (index < _length);
-	char*   test		=	(char*) _data + index;
+	assert (index < _length);					// Index is larger than length of array
+	char*   test		=	(char*) _data + index;		// Retrieves the pointer of the char at the index
 	return *test;
 }
 
@@ -199,8 +204,8 @@ copies string into string
  */
 void str::operator=(str& otherString)
 {
-	assert (&otherString != nullptr);
-	memcpy_s(this,
+	assert (&otherString != nullptr);				// other string is nullptr
+	memcpy_s(this,							// copies string into other string memory location
 		sizeof(str),
 		&otherString,
 		sizeof(str)
@@ -212,8 +217,8 @@ copies string into string
  */
 void str::operator=(str otherString)
 {
-	assert (&otherString != nullptr);
-	memcpy_s(this,
+	assert (&otherString != nullptr);				// other string is nullptr
+	memcpy_s(this,							// copies string into other string memory location
 		sizeof(str),
 		&otherString,
 		sizeof(str)
@@ -225,14 +230,14 @@ copies const char* value into string
  */
 void str::operator=(const char* otherString)
 {
-	assert (otherString != nullptr);
-	memcpy_s(_data,
+	assert (otherString != nullptr);				// other string is nullptr
+	memcpy_s(_data,							// copies string into other string memory location
 		sizeof(char) * MAX_SIZE,
 		otherString,
 		sizeof(otherString)
 	);
-	_length		=	strlen(otherString);
-	_data[_length]	=	'\0';
+	_length		=	strlen(otherString);			// sets length
+	_data[_length]	=	'\0';					// ensures null termination
 }
 
 /*
@@ -242,20 +247,15 @@ concatenates string with other string
 template<class _T>
 _NODISCARD str str::operator+(_T otherString)
 {
-	 assert (strlen(*this) + strlen(otherString) < MAX_SIZE);
+	 assert (strlen(*this) + strlen(otherString) < MAX_SIZE);	// concatenated string lengths sum to larger than max size
 	 str x		=	_data;
 	 x._length	=	strlen(*this);
 	 x		+=	otherString;
 	 return x;
  }
  
-_NODISCARD bool str::operator==(str otherString)
-{
-	return (compare(otherString) == 0);
-}
-
 /**
-concatenates 1 character with += functionality,
+concatenates string with += functionality,
 modifies original string
 @param char concatChar
  */
@@ -318,6 +318,12 @@ inline void str::operator+=(char otherString)
 	_length++;
 	
 }
+
+_NODISCARD bool str::operator==(str otherString)
+{
+	return (compare(otherString) == 0);
+}
+
 
 /**
 returns a substring of given position and size
