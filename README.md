@@ -1,5 +1,5 @@
 # std-library
-This is a Headers-only c++ std-library implementation which contains strings, arrays and dynamic arrays.
+This is a Headers-only c++ std-library implementation which contains strings, arrays and dynamic arrays. This header only library focuses on readability and simplicity for the end user.
 
 
 ## Usage ⌨
