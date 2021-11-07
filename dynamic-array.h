@@ -1,10 +1,8 @@
 #ifndef		DYNAMIC_ARRAY_IMPL
 #define		DYNAMIC_ARRAY_IMPL
 
-#include	<memory>
-#include	<cassert>
-#include	"array-impl.h"
-#include	<initializer_list>
+#include "include.h"
+
 #define		DEFAULT_ARRAYSIZE	100
 
 template	<class _T>
