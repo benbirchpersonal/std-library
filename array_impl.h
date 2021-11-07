@@ -31,17 +31,16 @@ public:
 			void		print(size_t index1, size_t index2);
 
 
-	using		iterator   =	_T*;
+	using		iterator =	_T*;
 	_NODISCARD	iterator	begin()					const;
 	_NODISCARD	iterator	end()					const;
 
-private:
+protected:
 
 	size_t	_ElemSize;
 	size_t	_ArraySize;
 	_T*	_ArrayLocation;
 };
-
 
 
 template<class _T>
@@ -215,6 +214,7 @@ inline void arr<_T>::swap(size_t index1, size_t index2)
 	_T* loc1	=	(_ArrayLocation + index1);
 	_T* loc2	=	(_ArrayLocation + index2);
 	_T* temp	=	(_T*) (malloc(_ElemSize));
+
 	memcpy_s(
 	temp,
 	_ElemSize,
