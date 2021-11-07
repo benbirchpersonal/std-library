@@ -1,15 +1,17 @@
 #pragma once
-#ifdef ARRAY
-#include "array-impl.h"
-#endif
 
-#ifdef STRING
-#include "string-impl.h"
-#endif
+#include <cassert>
+#include <memory>
 
-#ifdef DYNAMIC_ARRAY
-#include "dynamic-array.h"
-#endif
+class str;
+
+template<class _T>
+class arr;
+
+template<class _T>
+class dynArr;
+
+
 
 
 /*
@@ -17,13 +19,13 @@ CONVENTIONS
 
 class member function declarations:
 
-	
+    
 KEYWORD		RETURN_TYPE		NAME	ARGS	KEYWORDS
 
 e.g
 
 _NODISCARD	size_t			count()			noexcept;
-			void			test()			noexcept;
+            void			test()			noexcept;
 
 class member variable declarations:
 
