@@ -79,6 +79,7 @@ int main() {
 #### Transformations / Operations 🪓➕🔍
 Arrays can be searched, items swapped, and other array operations.
 
+^^ the same applies to dynamic arrays
 
 
 All of the functions have detialed descriptions of their functions and parameters.
