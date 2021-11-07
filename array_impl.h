@@ -1,14 +1,9 @@
 #ifndef	ARRAYIMPL_H
 #define	ARRAYIMPL_H
 
-#include <memory>
-#include <cassert>
-#include <initializer_list>
-#include "dynamic-array.h"
+#include "include.h"
 
 #define	MAX_ARRAYSIZE 100
-
-
 static char ARRAY_OPERATION_BUFFER[MAX_ARRAYSIZE];
 
 template <class _T>
@@ -28,6 +23,7 @@ public:
 
 	_NODISCARD	int		findFirstOf(_T search);
 	_NODISCARD	int		findLastOf(_T search);
+
 	_NODISCARD	dynArr<size_t>  find(_T search);
 
 			void		swap(size_t index1, size_t index2);
@@ -48,9 +44,6 @@ private:
 
 
 
-/*
-* Constructor
-*/
 template<class _T>
 constexpr arr<_T>::arr(size_t size) noexcept
 {
@@ -200,6 +193,7 @@ _NODISCARD int arr<_T>::findLastOf(_T search)
 * Returns a dynamic array of the indexes of the occurances of a value in the array
 * @param searchTerm
 */
+
 template<class _T>
 _NODISCARD dynArr<size_t> arr<_T>::find(_T search)
 {
