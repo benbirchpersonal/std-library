@@ -1,6 +1,5 @@
 #ifndef		ARRAYIMPL_H
 #define		ARRAYIMPL_H
-
 #include	<memory>
 #include	<cassert>
 #include	<initializer_list>
