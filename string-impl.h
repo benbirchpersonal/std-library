@@ -1,119 +1,79 @@
-/*
-
-MIT License
-
-Copyright (c) 2021 Ben Birch
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-*/
-
-#ifndef BETTERSTRING_H
-#define BETTERSTRING_H
-#include <memory>
-#include <stdio.h>
-#include <cassert>
+#ifndef		STRINGIMPL_H
+#define		STRINGIMPL_H
+#include	<memory>
+#include	<stdio.h>
+#include	<cassert>
 
 // string max length
-static const uint16_t MAX_SIZE = 100;
+#define		MAX(a, b)	((a) > (b) ? (a) : (b))
+#define		MAX_SIZE	100
 static char OPERATION_BUFFER[MAX_SIZE];
-
-// forward declarations
-
-class str;
-inline void printf(str string);
-inline size_t strlen(str string);
-template<class _T> inline int strcmp(str& string, _T& string2);
-template<class _T> inline int strncmp(str& string, _T& string2, size_t n);
-template<class _T> inline int strstr(str& string, _T& searchString);
-template<class _T> inline str strcat(str& string1, _T& string2);
 
 // DECL
 class str {
-private:
-	char _data[MAX_SIZE];
-	size_t _length;
 
 public:
 	// constructors
-	str();
-	str(str& x);
-	str(char x);
-	str(const char* x);
-	str(const str& s);
-	str(std::shared_ptr<str> x);
+								str()								noexcept;
+								str(str& x)							noexcept;
+								str(char x)							noexcept;
+								str(const char* x)					noexcept;
+								str(const str& s)					noexcept;
+								~str()								noexcept;
 
-	// destructor
-	~str();
-
-	// operators
-	void operator=(str& otherString);
-	void operator=(str otherString);
-	void operator=(const char* otherString);
-
-	bool operator==(str otherString);
-
-	template<class _T>
-	str operator+(_T otherString);
-	//template<class T>
-	//str operator+(T& otherString);
-
-	void operator+=(str otherString);
-	void operator+=(const char* otherString);
-	void operator+=(char otherString);
-	
-	char operator[](size_t index);
-
+	template		<class _T>
+	_NODISCARD		str			operator+(_T otherString);
+					void		operator=(str& otherString);
+					void		operator=(str otherString);
+					void		operator=(const char* otherString);
+					bool		operator==(str otherString);
+					void		operator+=(str otherString);
+					void		operator+=(const char* otherString);
+					void		operator+=(char otherString);
+					char&		operator[](size_t index);
 	// finders
-	int containsAt(str& x);
-	int containsAt(const char* x);
-
-	bool contains(str& x);
-	bool contains(const char* x);
-
+	_NODISCARD		int			contains(str& x);
+	_NODISCARD		int			contains(const char* x);
 	// comparers
-	int compare(str& x);
-	int compare(const char* x);
-
-	int compareUntil(str& x, size_t n);
-	int compareUntil(const char* x, size_t n);
-
-	str substr(size_t start, size_t length);
-
-	int splitBy(str* stringArray, char x);
-
+	_NODISCARD		int			compare(str& x);
+	_NODISCARD		int			compare(const char* x);
+	_NODISCARD		int			compareUntil(str& x, size_t n);
+	_NODISCARD		int			compareUntil(const char* x, size_t n);
+	_NODISCARD		str			substr(size_t start, size_t length);
 	// removers
-	str remove(char x);
-	str removeAt(size_t x);
-	str removeRange(size_t x, size_t size);
-	void clear();
-
+	_NODISCARD		str			remove(char x);
+	_NODISCARD		str			removeAt(size_t x);
+	_NODISCARD		str			removeRange(size_t x, size_t size);
+	constexpr		void		clear() noexcept;
+	//misc
+	_NODISCARD		str			Xor(uint8_t key);
+	_NODISCARD		int			splitBy(str* stringArray, char x);
 	// getters and setters
-	const char* c_str();
-	size_t length();
+	_NODISCARD		const char* c_str();
+	_NODISCARD		size_t		length();
+
 
 private:
 	// internal functions
-	void internalUpdlen();
-	void internalInsertString(char* dest, int start, char* src);
-	void cMemSet(void* mem, size_t sizeInChars, char chr);
+					void		internalUpdlen();
+					void		internalInsertString(char* dest, int start, char* src);
+					void		cMemSet(void* mem, size_t sizeInChars, char chr);
 
+private:
+	char			_data[MAX_SIZE];
+	size_t			_length;
 };
+
+
+inline				void		printf(str string);
+inline				size_t		strlen(str string);
+template<class _T>  int			strcmp(str& string, _T& string2);
+template<class _T>  int			strncmp(str& string, _T& string2, size_t n);
+template<class _T>  int			strstr(str& string, _T& searchString);
+template<class _T>  str			strcat(str& string1, _T& string2);
+
+
+
 
 // IMPL
 
@@ -121,12 +81,13 @@ private:
 Default Constructor,
 Creates an empty string.
  */
-inline str::str() {
+str::str() noexcept
+{
 #ifdef DEBUG
 	printf("\n[empty] created \n");
 #endif
-	this->_length = 1;
-	this->_data[0] = '\0';
+	_length		=		1;
+	_data[0]	=		'\0';
 }
 
 /**
@@ -134,13 +95,14 @@ Default Constructor,
 initializes from a char
 @param char
  */
-inline str::str(char x) {
+str::str(char x) noexcept
+{
 #ifdef DEBUG
 	printf("\n[%c] created \n", x);
 #endif
-	this->_length = 1;
-	this->_data[0] = x;
-	this->_data[1] = '\0';
+	_length		=		1;
+	_data[0]	=		x;
+	_data[1]	=		'\0';
 }
 
 
@@ -149,14 +111,20 @@ Copy Constructor,
 Copies a string from non-const value
 @param str& baseString
  */
-inline str::str(str& copyString)
+str::str(str& copyString) noexcept
 {
-	assert(&copyString != nullptr);
+	assert (&copyString != nullptr);
 #ifdef DEBUG
 	printf("\n[%s] copied \n", _data);
 #endif
-	memcpy_s(this->_data, sizeof(copyString._data), (const void*)copyString._data, sizeof(this->_data));
-	this->_length = copyString._length;
+	rsize_t dataSize	=		sizeof(_data);
+	_length				=		copyString._length;
+	memcpy_s(
+		_data, 
+		dataSize,
+		(const void*) copyString._data, 
+		dataSize
+	);
 }
 
 /**
@@ -164,63 +132,75 @@ Copy Constructor,
 Copies a string from const value
 @param const str& baseString
  */
-inline str::str(const str& x)
+str::str(const str& x) noexcept
 {
-	assert(&x != nullptr);
+	assert (&x != nullptr);
 #ifdef DEBUG
 	printf("\ncopied \n");
 #endif
-	memcpy_s(this->_data, sizeof(x._data), (const void*)x._data, sizeof(this->_data));
-	this->_length = x._length;
-}
 
-/**
-Copy Constructor,
-Copies a string from a shared_ptr value,
-useful for preventing strings going out of scope
-@param std::shared_ptr<str> baseString
- */
-inline str::str(std::shared_ptr<str> x)
-{
-#ifdef DEBUG
-	printf("\n[%s] copied \n", _data);
-#endif
-	memcpy_s(this->_data, sizeof(x.get()->_data), (const void*)x.get()->_data, sizeof(this->_data));
-	this->_length = x.get()->_length;
-}
-
-/**
-Debug only,
-shows when strings go out of scope
- */
-inline str::~str()
-{
-#ifdef DEBUG
-	printf("\n[%s] out of scope \n", _data);
-#endif
+	rsize_t dataSize	=		sizeof(x._data);
+	_length				=		x._length;
+	memcpy_s(
+		_data, 
+		dataSize,
+		(const void*)x._data, 
+		dataSize
+	);
 }
 
 /**
 Constructor from const char*
 @param const char* baseString
  */
-inline str::str(const char* x)
+str::str(const char* x) noexcept
 {
-	assert(x != nullptr);
-	strcpy_s(this->_data, x);
+	assert (x != nullptr);
+	strcpy_s(
+		_data, 
+		x
+	);
+
 	internalUpdlen();
-	this->_data[this->_length] = '\0';
+	_data[_length]	=		'\0';
 }
 
+
+/**
+Debug only,
+shows when strings go out of scope
+ */
+inline str::~str() noexcept
+{
+#ifdef DEBUG
+	printf("\n[%s] out of scope \n", _data);
+#endif
+}
+
+
+
 // operator impl
+
+
+
+char& str::operator[](size_t index) {
+	assert (index < _length);
+	char*   test	=		(char*) _data + index;
+	return *test;
+}
+
 /**
 copies string into string
 @param str& copiedString
  */
 void str::operator=(str& otherString)
 {
-	assert(&otherString != nullptr);
-	memcpy_s(this, sizeof(str), &otherString, sizeof(str));
+	assert (&otherString != nullptr);
+	memcpy_s(this,
+		sizeof(str),
+		&otherString,
+		sizeof(str)
+	);
 }
 /**
 copies string into string
@@ -228,8 +208,12 @@ copies string into string
  */
 void str::operator=(str otherString)
 {
-	assert(&otherString != nullptr);
-	memcpy_s(this, sizeof(str), &otherString, sizeof(str));
+	assert (&otherString != nullptr);
+	memcpy_s(this,
+		sizeof(str),
+		&otherString,
+		sizeof(str)
+	);
 }
 /**
 copies const char* value into string
@@ -237,50 +221,34 @@ copies const char* value into string
  */
 void str::operator=(const char* otherString)
 {
-	assert(otherString != nullptr);
-	memcpy_s(this->_data, sizeof(char) * MAX_SIZE, otherString, sizeof(otherString));
-	_length = strlen(otherString);
-	this->_data[_length] = '\0';
+	assert (otherString != nullptr);
+	memcpy_s(_data,
+		sizeof(char) * MAX_SIZE,
+		otherString,
+		sizeof(otherString)
+	);
+	_length			=		strlen(otherString);
+	_data[_length]	=		'\0';
 }
 
-/**
+/*
 concatenates string with other string
 @param str& concatString
  */
- /*
- template<class T>
- str str::operator+(T& otherString)
- {
-	 assert(strlen(*this) + strlen(otherString) < MAX_SIZE);
-	 str x = this->_data;
-	 x._length = strlen(*this);
-	 x += otherString;
+template<class _T>
+inline str str::operator+(_T otherString)
+{
+	 assert (strlen(*this) + strlen(otherString) < MAX_SIZE);
+	 str x		=		_data;
+	 x._length  =		strlen(*this);
+	 x			+=		otherString;
 	 return x;
  }
- */
-
-
+ 
 inline bool str::operator==(str otherString)
 {
-	return(!(this->compare(otherString)) == 0);
+	return !(compare(otherString) == 0);
 }
-
-
-
- /**
- concatenates string with other string
- @param str& concatString
-  */
-template<class T>
-str str::operator+(T otherString)
-{
-	assert(strlen(*this) + strlen(otherString) < MAX_SIZE);
-	str x = this->_data;
-	x._length = strlen(*this);
-	x += otherString;
-	return x;
-}
-
 
 /**
 concatenates 1 character with += functionality,
@@ -289,11 +257,15 @@ modifies original string
  */
 void str::operator+=(str otherString)
 {
-	assert((otherString._length) >= 1);
-	otherString._data[MAX_SIZE - 1] = '\0';
+	assert (otherString._length >= 1);
+	otherString._data[MAX_SIZE - 1]		=	'\0';
 	internalUpdlen();
-	internalInsertString(this->_data, strlen(*this), otherString._data);
-	this->_data[MAX_SIZE - 1] = '\0';
+	internalInsertString(
+		_data,
+		_length,
+		otherString._data
+	);
+	_data[MAX_SIZE - 1]					=	'\0';
 }
 
 /**
@@ -303,14 +275,28 @@ modifies original string
  */
 void str::operator+=(const char* otherString)
 {
-	assert(otherString != nullptr);
-	assert(strlen(otherString) >= 1);
-	strncpy_s(OPERATION_BUFFER, otherString, MAX_SIZE);
-	OPERATION_BUFFER[MAX_SIZE - 1] = '\0';
+	assert (otherString != nullptr);
+	assert (strlen(otherString) >= 1);
+	strncpy_s(
+		OPERATION_BUFFER,
+		otherString,
+		MAX_SIZE
+	);
+
+	OPERATION_BUFFER[MAX_SIZE - 1]		=		'\0';
 	internalUpdlen();
-	internalInsertString(this->_data, this->_length, OPERATION_BUFFER);
-	this->_data[MAX_SIZE - 1] = '\0';
-	cMemSet(OPERATION_BUFFER, MAX_SIZE, '\0');
+	internalInsertString(
+		_data, 
+		_length,
+		OPERATION_BUFFER
+	);
+
+	_data[MAX_SIZE - 1]					=		'\0';
+	cMemSet(
+		OPERATION_BUFFER, 
+		MAX_SIZE, 
+		'\0'
+	);
 }
 
 /**
@@ -320,70 +306,13 @@ modifies original string
  */
 inline void str::operator+=(char otherString)
 {
-	if (strlen(*this) < 100) {
-		this->_data[_length] = otherString;
-		this->_data[_length + 1] = '\0';
-		this->_length++;
-	}
-}
+	if (_length > MAX_SIZE - 2)
+		return; 
 
-/**
-returns index at which the substring x occurs
-@param str& substring
- */
-inline int str::containsAt(str& x)
-{
-	assert(strlen(x) >= 1);
-	assert(&x != nullptr);
-	assert(strlen(x) <= strlen(*this));
-	int xlen = strlen(x);
-	int foundCount = 0;
-	for (size_t i = 0; i < strlen(*this); i++)
-	{
-		if (this->_data[i] == x._data[foundCount]) {
-			foundCount++;
-		}
-		else
-			foundCount = 0;
-
-		if (foundCount == xlen)
-			return (i + 1) - xlen;
-	}
-	return -1;
-}
-
-/**
-returns index at which the substring x occurs
-@param const char* substring
- */
-inline int str::containsAt(const char* x)
-{
-	assert(x != nullptr);
-	assert(strlen(x) >= 1);
-	assert(strlen(x) < strlen(*this));
-	int xlen = strlen(x);
-	int foundCount = 0;
-	for (size_t i = 0; i < strlen(*this); i++)
-	{
-		if (this->_data[i] == x[foundCount]) {
-			foundCount++;
-		}
-		else
-			foundCount = 0;
-
-		if (foundCount == xlen)
-			return (i + 1) - xlen;
-	}
-	return -1;
-}
-
-/**
-returns whether the substring x occurs in the string
-@param const char* substring
- */
-inline bool str::contains(const char* x)
-{
-	return containsAt(x) != 0;
+	_data[_length]		=		otherString;
+	_data[_length + 1]	=		'\0';
+	_length++;
+	
 }
 
 /**
@@ -393,54 +322,87 @@ returns a substring of given position and size
  */
 inline str str::substr(size_t start, size_t length)
 {
-	assert(start + length <= strlen(*this));
-	assert(length >= 1);
+	assert (start + length <= _length);
+	assert (length >= 1);
 
-	int x = 0;
+	int	x				=		0;
 	for (size_t i = start; i < length; i++, x++)
 	{
-		OPERATION_BUFFER[x] = this->_data[i];
+		OPERATION_BUFFER[x] = _data[i];
 	}
-	OPERATION_BUFFER[x] = '\0';
-	str tmp = OPERATION_BUFFER;
-	cMemSet(OPERATION_BUFFER, MAX_SIZE, 0);
+
+	OPERATION_BUFFER[x] =		'\0';
+	str tmp				=		OPERATION_BUFFER;
+	cMemSet(
+		OPERATION_BUFFER, 
+		MAX_SIZE, 
+		0
+	);
 	return tmp;
 }
 
-/**
-returns whether the substring x occurs in the string
-@param str& substring
- */
-inline bool str::contains(str& x)
+ /**
+ returns index at which the substring x occurs
+ @param str& substring
+  */
+inline int str::contains(str& x)
 {
-	assert(this->_length >= strlen(x));
-	assert(strlen(x) >= 1);
-	int xlen = strlen(x);
+	int xlen = x._length;
 	int foundCount = 0;
-	for (size_t i = 0; i < strlen(*this); i++)
+	assert (xlen >= 1);
+	assert (&x != nullptr);
+	assert (xlen <= _length);
+	
+
+	for (size_t i = 0; i < _length; i++)
 	{
-		if (this->_data[i] == x._data[foundCount]) {
+		if (_data[i] == x._data[foundCount]) {
 			foundCount++;
 		}
 		else
 			foundCount = 0;
 
 		if (foundCount == xlen)
-			return true;
+			return (i + 1) - xlen;
 	}
-	return false;
+	return -1;
 }
-#define MAX(a, b) ((a) > (b) ? (a) : (b))
+/**
+returns index at which the substring x occurs
+@param str& substring
+ */
+inline int str::contains(const char* x)
+{
+	int xlen			=		strlen(x);
+	int foundCount		=		0;
+	assert (xlen >= 1);
+	assert (&x != nullptr);
+	assert (xlen <= _length);
+	
+	for (size_t i = 0; i < _length; i++)
+	{
+		if (_data[i] == x[foundCount]) {
+			foundCount++;
+		}
+		else
+			foundCount = 0;
+
+		if (foundCount == xlen)
+			return (i + 1) - xlen;
+	}
+	return -1;
+}
+
 /**
 returns 0 if strings are equal
 @param str& stringCmp
  */
 inline int str::compare(str& x)
 {
-	for (size_t i = 0; i < MAX(strlen(*this), strlen(x)); i++)
+	for (size_t i = 0; i < MAX(_length, x._length); i++)
 	{
-		if (this->_data[i] != x._data[i])
-			return (int)this->_data[i] - (int)x._data[i];
+		if (_data[i] != x._data[i])
+			return (int)_data[i] - (int)x._data[i];
 	}
 	return 0;
 }
@@ -451,11 +413,11 @@ returns 0 if strings are equal
  */
 inline int str::compare(const char* x)
 {
-	assert(x != nullptr);
-	for (size_t i = 0; i < MAX(strlen(*this), strlen(x)); i++)
+	assert (x != nullptr);
+	for (size_t i = 0; i < MAX(_length, strlen(x)); i++)
 	{
-		if (this->_data[i] != x[i])
-			return (int)this->_data[i] - (int)x[i];
+		if (_data[i] != x[i])
+			return (int)_data[i] - (int)x[i];
 	}
 	return 0;
 }
@@ -467,11 +429,11 @@ returns 0 if strings are equal up to n length
  */
 inline int str::compareUntil(str& x, size_t n)
 {
-	assert(n < (strlen(x)));
+	assert (n < (x._length));
 	for (size_t i = 0; i < n; i++)
 	{
-		if (this->_data[i] != x._data[i])
-			return (int)this->_data[i] - (int)x._data[i];
+		if (_data[i] != x._data[i])
+			return (int)_data[i] - (int)x._data[i];
 	}
 	return 0;
 }
@@ -483,11 +445,11 @@ returns 0 if strings are equal up to n length
  */
 inline int str::compareUntil(const char* x, size_t n)
 {
-	assert(n < strlen(x));
+	assert (n < strlen(x));
 	for (size_t i = 0; i < n; i++)
 	{
-		if (this->_data[i] != x[i])
-			return (int)this->_data[i] - (int)x[i];
+		if (_data[i] != x[i])
+			return (int)_data[i] - (int)x[i];
 	}
 	return 0;
 }
@@ -496,10 +458,10 @@ inline int str::compareUntil(const char* x, size_t n)
 clears the string,
 self explanatory
  */
-inline void str::clear()
+constexpr void str::clear() noexcept
 {
-	this->_data[0] = '\0';
-	this->_length = 0;
+	_data[0]		=		'\0';
+	_length			=		0;
 }
 
 /**
@@ -510,18 +472,18 @@ returns the numbers of segments the string has been split into
  */
 inline int str::splitBy(str* stringArray, char x)
 {
-	size_t splitIndex = 0;
-	size_t splitSize = 0;
-	for (size_t i = 0; i < strlen(*this); i++)
+	size_t splitIndex		=		0;
+	size_t splitSize		=		0;
+	for (size_t i = 0; i < _length; i++)
 	{
-		if (this->_data[i] != x) {
-			stringArray[splitIndex] += this->_data[i];
+		if (_data[i] != x) {
+			stringArray[splitIndex]		+=	_data[i];
 			splitSize++;
 			continue;
 		}
 		stringArray[splitIndex]._data[splitSize] = '\0';
 		splitIndex++;
-		splitSize = 0;
+		splitSize		=		0;
 	}
 
 	stringArray[splitIndex]._data[splitSize] = '\0';
@@ -534,17 +496,21 @@ returns a pointer to a new string without the given character
  */
 inline str str::remove(char x)
 {
-	int bufIndex = 0;
-	for (size_t i = 0; i < strlen(*this); i++)
+	int bufIndex		=		0;
+	for (size_t i = 0; i < _length; i++)
 	{
-		if (this->_data[i] != x) {
-			OPERATION_BUFFER[bufIndex] = this->_data[i];
+		if (_data[i] != x) {
+			OPERATION_BUFFER[bufIndex] = _data[i];
 			bufIndex++;
 		}
 	}
-	OPERATION_BUFFER[bufIndex + 1] = '\0';
-	str ret = OPERATION_BUFFER;
-	cMemSet(OPERATION_BUFFER, bufIndex + 1, 0);
+	OPERATION_BUFFER[bufIndex + 1] =		'\0';
+	str ret						   =		OPERATION_BUFFER;
+	cMemSet(
+		OPERATION_BUFFER, 
+		bufIndex + 1, 
+		0
+	);
 	return ret;
 }
 
@@ -554,18 +520,22 @@ returns a new string, removing the given index
  */
 inline str str::removeAt(size_t x)
 {
-	assert(x <= strlen(*this));
-	size_t bufIndex = 0;
-	for (size_t i = 0; i < strlen(*this); i++)
+	assert (x <= _length);
+	size_t bufIndex			=		0;
+	for (size_t i = 0; i < _length; i++)
 	{
 		if (i != x) {
-			OPERATION_BUFFER[bufIndex] = this->_data[i];
+			OPERATION_BUFFER[bufIndex] = _data[i];
 			bufIndex++;
 		}
 	}
-	OPERATION_BUFFER[bufIndex + 1] = '\0';
-	str ret = OPERATION_BUFFER;
-	cMemSet(OPERATION_BUFFER, bufIndex + 1, 0);
+	OPERATION_BUFFER[bufIndex + 1]		=		'\0';
+	str ret								=		OPERATION_BUFFER;
+	cMemSet(
+		OPERATION_BUFFER, 
+		bufIndex + 1, 
+		0
+	);
 	return ret;
 }
 
@@ -576,18 +546,22 @@ returns a new string, removing the range between the given index and size
  */
 inline str str::removeRange(size_t x, size_t size)
 {
-	assert(strlen(*this) >= size);
-	size_t bufIndex = 0;
-	for (size_t i = 0; i < strlen(*this); i++)
+	assert (_length >= size);
+	size_t bufIndex		=		0;
+	for (size_t i = 0; i < _length; i++)
 	{
 		if (!(i > x && i <= x + size)) {
-			OPERATION_BUFFER[bufIndex] = this->_data[i];
+			OPERATION_BUFFER[bufIndex] = _data[i];
 			bufIndex++;
 		}
 	}
-	OPERATION_BUFFER[bufIndex + 1] = '\0';
-	str ret = str(OPERATION_BUFFER);
-	cMemSet(OPERATION_BUFFER, bufIndex + 1, 0);
+	OPERATION_BUFFER[bufIndex + 1]		=		'\0';
+	str ret								=		str(OPERATION_BUFFER);
+	cMemSet(
+		OPERATION_BUFFER, 
+		bufIndex + 1, 
+		0
+	);
 	return ret;
 }
 
@@ -596,51 +570,64 @@ returns a const char*
  */
 inline const char* str::c_str()
 {
-	assert(_length < MAX_SIZE);
-	_data[_length] = '\0';
+	assert (_length < MAX_SIZE);
+	_data[_length]		=		'\0';
 	return _data;
 }
 /**
 returns the length of the string
  */
 inline size_t str::length() {
-	assert(_length >= 0);
+	assert (_length >= 0);
 	return _length;
 }
+
+/*
+* xor encryption with int key
+*/
+inline str str::Xor(uint8_t key)
+{
+	for (size_t i = 0; i < _length; i++)         
+	{
+		*(_data + i) = (*(char*)(_data + i) ^ key);
+	}
+	return str(*this);
+}
+
 
 // INTERNAL IMPL
 
 void str::internalUpdlen() {
-	for (unsigned short i = 0; i < MAX_SIZE; i++) {
-		if (this->_data[i] == '\0') {
-			this->_length = i;
+	for (size_t i = 0; i < MAX_SIZE; i++) {
+		if (_data[i] == '\0') {
+			_length = i;
 			return;
 		}
 	}
-	this->_length = 0;
+	_length			=		0;
 	return;
 }
 
 void str::internalInsertString(char* dest, int start, char* src) {
-	int x = 0;
-	assert(start > 0);
-	assert(src != nullptr);
+	int x			=		0;
+	assert (start > 0);
+	assert (src != nullptr);
 
 
 
 	for (size_t i = start; i < MAX_SIZE; i++, x++)
 	{
-		dest[i] = src[x];
+		dest[i]		=		src[x];
 		if (src[x] == '\0')
 			return;
 	}
 }
 
 void str::cMemSet(void* mem, size_t sizeInChars, char byte) {
-	char* memchar = (char*)mem;
+	char* memchar	=		(char*)mem;
 	for (size_t i = 0; i < sizeInChars; i++)
 	{
-		memchar[i] = byte;
+		memchar[i]	=		byte;
 	}
 }
 
@@ -675,16 +662,16 @@ returns index of first string difference
 @param str& / const char* / char[] string2
  */
 template<class _T>
-inline int strstr(str& string, _T& searchString)
+int strstr(str& string, _T& searchString)
 {
-	return string.containsAt(searchString);
+	return string.contains(searchString);
 }
 
 /**
 returns length of string
 @param str& string
  */
-inline size_t strlen(str string)
+size_t strlen(str string)
 {
 	return string.length();
 }
@@ -695,11 +682,11 @@ concatenates the strings
 @param str& / const char* / char[] string2
  */
 template<class _T>
-inline str strcat(str& string1, _T& string2) {
+str strcat(str& string1, _T& string2) {
 	return string1 + str(string2);
 }
 
-inline void printf(str string) {
+void printf(str string) {
 	printf(string.c_str());
 }
 
