@@ -6,13 +6,13 @@
 #define	DEFAULT_ARRAYSIZE 100
 
 template	<class _ElemType>
-class		dynArr : public arr<_ElemType> {
+class		stack : public arr<_ElemType> {
 public:
     // constructors
-    constexpr				dynArr<_ElemType>()					noexcept;
-    constexpr				dynArr<_ElemType>(size_t reservedSpace)			noexcept;
-    constexpr				dynArr(dynArr<_ElemType>& copiedArr)			noexcept;
-    constexpr				dynArr(std::initializer_list<_ElemType> _List)		noexcept;
+    constexpr				stack<_ElemType>()					noexcept;
+    constexpr				stack<_ElemType>(size_t reservedSpace)			noexcept;
+    constexpr				stack(stack<_ElemType>& copiedArr)			noexcept;
+    constexpr				stack(std::initializer_list<_ElemType> _List)		noexcept;
 
     // push/pop
 			bool		push(_ElemType item)					noexcept;
@@ -26,7 +26,7 @@ private:
 
 
 template<class _ElemType>
-constexpr dynArr<_ElemType>::dynArr() noexcept
+constexpr stack<_ElemType>::stack() noexcept
 {
     this->_ArrayLocation		=	(_ElemType*) malloc(sizeof(_ElemType) * DEFAULT_ARRAYSIZE);
     this->_ArraySize			=	0;
@@ -35,7 +35,7 @@ constexpr dynArr<_ElemType>::dynArr() noexcept
 
 
 template<class _ElemType>
-constexpr dynArr<_ElemType>::dynArr(size_t reservedSpace) noexcept
+constexpr stack<_ElemType>::stack(size_t reservedSpace) noexcept
 {
 	this->_ArrayLocation		=	(_ElemType*) malloc(sizeof(_ElemType) * reservedSpace);
 	this->_ArraySize		=	0;
@@ -43,7 +43,7 @@ constexpr dynArr<_ElemType>::dynArr(size_t reservedSpace) noexcept
 }
 
 template<class _ElemType>
-constexpr  dynArr<_ElemType>::dynArr(dynArr<_ElemType>& copiedArr) noexcept
+constexpr  stack<_ElemType>::stack(stack<_ElemType>& copiedArr) noexcept
 {
 	this->_ArrayLocation		=	(_ElemType*) malloc(sizeof(_ElemType) * copiedArr._ArraySize);
 	this->_ArraySize		=	copiedArr._ArraySize;
@@ -60,7 +60,7 @@ constexpr  dynArr<_ElemType>::dynArr(dynArr<_ElemType>& copiedArr) noexcept
 
 
 template<class _ElemType>
-constexpr  dynArr<_ElemType>::dynArr(std::initializer_list<_ElemType> _List) noexcept
+constexpr  stack<_ElemType>::stack(std::initializer_list<_ElemType> _List) noexcept
 {
 	this->_ArrayLocation		=	(_ElemType*) malloc(sizeof(_ElemType)	* _List.size());
 	this->_ArraySize		=	_List.size();
@@ -81,7 +81,7 @@ constexpr  dynArr<_ElemType>::dynArr(std::initializer_list<_ElemType> _List) noe
 }
 
 template<class _ElemType>
- inline bool dynArr<_ElemType>::push(_ElemType item) noexcept
+ inline bool stack<_ElemType>::push(_ElemType item) noexcept
  {
 	assert (this->_ArrayLocation != nullptr);
 
@@ -97,7 +97,7 @@ template<class _ElemType>
 }
 
 template<class _ElemType>
-inline _ElemType& dynArr<_ElemType>::pop() noexcept
+inline _ElemType& stack<_ElemType>::pop() noexcept
 {
 	this->_ArraySize--;
 	return (_ElemType) * (this->_ArrayLocation + this->_ArraySize - 1);
@@ -107,7 +107,7 @@ inline _ElemType& dynArr<_ElemType>::pop() noexcept
 * Finds a new chunk of memory which the array can be placed in. 
 */
 template<class _ElemType>
-_NODISCARD inline bool dynArr<_ElemType>::realloc()
+_NODISCARD inline bool stack<_ElemType>::realloc()
 {
 	_ElemType* newLocation		=	nullptr;
 	newLocation			=	(_ElemType*)(malloc(sizeof(_ElemType) * this->_ArrayAvailableSize * 2));
