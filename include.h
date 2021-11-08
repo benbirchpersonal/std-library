@@ -5,13 +5,14 @@
 
 class str;
 
-template<class _T>
+template<class _ElemType>
 class arr;
 
-template<class _T>
-class dynArr;
+template<class _ElemType>
+class stack;
 
-
+template<class _ElemType>
+class queue;
 
 
 /*
@@ -20,7 +21,7 @@ CONVENTIONS
 class member function declarations:
 
     
-KEYWORD		RETURN_TYPE		NAME	ARGS	KEYWORDS
+KEYWORD		RETURN_ElemTypeYPE		NAME	ARGS	KEYWORDS
 
 e.g
 
