@@ -24,7 +24,7 @@ public:
 	_NODISCARD	int		findFirstOf(_ElemType search);
 	_NODISCARD	int		findLastOf(_ElemType search);
 
-	_NODISCARD	dynArr<size_t>  find(_ElemType search);
+	_NODISCARD	stack<size_t>  find(_ElemType search);
 
 			void		swap(size_t index1, size_t index2);
 			void		print();
@@ -194,9 +194,9 @@ _NODISCARD int arr<_ElemType>::findLastOf(_ElemType search)
 */
 
 template<class _ElemType>
-_NODISCARD dynArr<size_t> arr<_ElemType>::find(_ElemType search)
+_NODISCARD stack<size_t> arr<_ElemType>::find(_ElemType search)
 {
-	dynArr<size_t> foundArray;
+	stack<size_t> foundArray;
 
 	for (size_t i = 0; i < _ArraySize; i++)
 	{
