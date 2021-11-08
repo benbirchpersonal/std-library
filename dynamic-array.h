@@ -5,18 +5,18 @@
 
 #define	DEFAULT_ARRAYSIZE 100
 
-template	<class _T>
-class		dynArr : public arr<_T> {
+template	<class _ElemType>
+class		dynArr : public arr<_ElemType> {
 public:
     // constructors
-    constexpr				dynArr<_T>()					noexcept;
-    constexpr				dynArr<_T>(size_t reservedSpace)		noexcept;
-    constexpr				dynArr(dynArr<_T>& copiedArr)			noexcept;
-    constexpr				dynArr(std::initializer_list<_T> _List)		noexcept;
+    constexpr				dynArr<_ElemType>()					noexcept;
+    constexpr				dynArr<_ElemType>(size_t reservedSpace)			noexcept;
+    constexpr				dynArr(dynArr<_ElemType>& copiedArr)			noexcept;
+    constexpr				dynArr(std::initializer_list<_ElemType> _List)		noexcept;
 
     // push/pop
-			bool		push(_T item)					noexcept;
-			_T&		pop()						noexcept;
+			bool		push(_ElemType item)					noexcept;
+			_ElemType&	pop()							noexcept;
 private:
     _NODISCARD		bool		realloc();
 
@@ -25,27 +25,27 @@ private:
 };
 
 
-template<class _T>
-constexpr dynArr<_T>::dynArr() noexcept
+template<class _ElemType>
+constexpr dynArr<_ElemType>::dynArr() noexcept
 {
-    this->_ArrayLocation		=	(_T*) malloc(sizeof(_T) * DEFAULT_ARRAYSIZE);
+    this->_ArrayLocation		=	(_ElemType*) malloc(sizeof(_ElemType) * DEFAULT_ARRAYSIZE);
     this->_ArraySize			=	0;
     this->_ArrayAvailableSize		=	DEFAULT_ARRAYSIZE;
 }
 
 
-template<class _T>
-constexpr dynArr<_T>::dynArr(size_t reservedSpace) noexcept
+template<class _ElemType>
+constexpr dynArr<_ElemType>::dynArr(size_t reservedSpace) noexcept
 {
-	this->_ArrayLocation		=	(_T*) malloc(sizeof(_T) * reservedSpace);
+	this->_ArrayLocation		=	(_ElemType*) malloc(sizeof(_ElemType) * reservedSpace);
 	this->_ArraySize		=	0;
 	this->_ArrayAvailableSize	=	reservedSpace;
 }
 
-template<class _T>
-constexpr  dynArr<_T>::dynArr(dynArr<_T>& copiedArr) noexcept
+template<class _ElemType>
+constexpr  dynArr<_ElemType>::dynArr(dynArr<_ElemType>& copiedArr) noexcept
 {
-	this->_ArrayLocation		=	(_T*) malloc(sizeof(_T) * copiedArr._ArraySize);
+	this->_ArrayLocation		=	(_ElemType*) malloc(sizeof(_ElemType) * copiedArr._ArraySize);
 	this->_ArraySize		=	copiedArr._ArraySize;
 	this->_ArrayAvailableSize	=	copiedArr._ArrayAvailableSize;
 	rsize_t copySize		=	copiedArr._ArraySize;
@@ -59,20 +59,20 @@ constexpr  dynArr<_T>::dynArr(dynArr<_T>& copiedArr) noexcept
 }
 
 
-template<class _T>
-constexpr  dynArr<_T>::dynArr(std::initializer_list<_T> _List) noexcept
+template<class _ElemType>
+constexpr  dynArr<_ElemType>::dynArr(std::initializer_list<_ElemType> _List) noexcept
 {
-	this->_ArrayLocation		=	(_T*) malloc(sizeof(_T)	* _List.size());
+	this->_ArrayLocation		=	(_ElemType*) malloc(sizeof(_ElemType)	* _List.size());
 	this->_ArraySize		=	_List.size();
 	this->_ArrayAvailableSize	=	DEFAULT_ARRAYSIZE > _List.size() ? DEFAULT_ARRAYSIZE : _List.size()	* 2;
 
 	for (size_t i = 0; i < _List.size(); i++)
 	{
-		_T temp			=	_T(*(_List.begin() + i));
-		rsize_t elemSize	=	sizeof(_T);
+		_ElemType temp		=	_ElemType(*(_List.begin() + i));
+		rsize_t elemSize	=	sizeof(_ElemType);
 
 		memcpy_s(
-			(_T*)this->_ArrayLocation + i,
+			(_ElemType*)this->_ArrayLocation + i,
 			elemSize,
 			&temp,
 			elemSize
@@ -80,8 +80,8 @@ constexpr  dynArr<_T>::dynArr(std::initializer_list<_T> _List) noexcept
 	}
 }
 
-template<class _T>
- inline bool dynArr<_T>::push(_T item) noexcept
+template<class _ElemType>
+ inline bool dynArr<_ElemType>::push(_ElemType item) noexcept
  {
 	assert (this->_ArrayLocation != nullptr);
 
@@ -89,40 +89,40 @@ template<class _T>
 	if (!realloc())
 		return false;
 
-	_T* pushloc		=	(this->_ArrayLocation)+ this->_ArraySize;
-	*pushloc		=	_T(item);
+	_ElemType* pushloc	=	(this->_ArrayLocation)+ this->_ArraySize;
+	*pushloc		=	_ElemType(item);
 
 	this->_ArraySize++;
 	return true;
 }
 
-template<class _T>
-inline _T& dynArr<_T>::pop() noexcept
+template<class _ElemType>
+inline _ElemType& dynArr<_ElemType>::pop() noexcept
 {
 	this->_ArraySize--;
-	return (_T) * (this->_ArrayLocation + this->_ArraySize - 1);
+	return (_ElemType) * (this->_ArrayLocation + this->_ArraySize - 1);
 }
 
 /*
 * Finds a new chunk of memory which the array can be placed in. 
 */
-template<class _T>
-_NODISCARD inline bool dynArr<_T>::realloc()
+template<class _ElemType>
+_NODISCARD inline bool dynArr<_ElemType>::realloc()
 {
-	_T* newLocation		=	nullptr;
-	newLocation		=	(_T*)(malloc(sizeof(_T) * this->_ArrayAvailableSize * 2));
+	_ElemType* newLocation		=	nullptr;
+	newLocation			=	(_ElemType*)(malloc(sizeof(_ElemType) * this->_ArrayAvailableSize * 2));
 
 	if (newLocation == nullptr) 
-	newLocation		=	(_T*)(malloc(sizeof(_T) * this->_ArrayAvailableSize + 1));
+	newLocation			=	(_ElemType*)(malloc(sizeof(_ElemType) * this->_ArrayAvailableSize + 1));
     
 	if (newLocation == nullptr)
 	return false;
 
 	memcpy_s(
 	newLocation,
-	sizeof(_T) * this->_ArrayAvailableSize * 2,
+	sizeof(_ElemType) * this->_ArrayAvailableSize * 2,
 		this->_ArrayLocation,
-	sizeof(_T) * this->_ArraySize
+	sizeof(_ElemType) * this->_ArraySize
 	);
 
 	free(this->_ArrayLocation);
