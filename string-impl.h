@@ -46,8 +46,8 @@ public:
 	_NODISCARD	size_t		length()				noexcept;
 
 
-	template	<class _T>
-	_NODISCARD	str		operator+(_T otherString);
+	template	<class _ElemType>
+	_NODISCARD	str		operator+(_ElemType otherString);
 			void		operator=(str& otherString);
 			void		operator=(str otherString);
 			void		operator=(const char* otherString);
@@ -73,12 +73,12 @@ private:
 
 
 
-inline			void		printf(str string);
-inline			size_t		strlen(str string);
-template<class _T>	int		strcmp(str& string, _T& string2);
-template<class _T>	int		strncmp(str& string, _T& string2, size_t n);
-template<class _T>	int		strstr(str& string, _T& searchString);
-template<class _T>	str		strcat(str& string1, _T& string2);
+inline				void		printf(str string);
+inline				size_t		strlen(str string);
+template<class _ElemType>	int		strcmp(str& string, _ElemType& string2);
+template<class _ElemType>	int		strncmp(str& string, _ElemType& string2, size_t n);
+template<class _ElemType>	int		strstr(str& string, _ElemType& searchString);
+template<class _ElemType>	str		strcat(str& string1, _ElemType& string2);
 
 
 
@@ -244,8 +244,8 @@ void str::operator=(const char* otherString)
 concatenates string with other string
 @param str& concatString
  */
-template<class _T>
-_NODISCARD str str::operator+(_T otherString)
+template<class _ElemType>
+_NODISCARD str str::operator+(_ElemType otherString)
 {
 	 assert (strlen(*this) + strlen(otherString) < MAX_SIZE);	// concatenated string lengths sum to larger than max size
 	 str x		=	_data;
@@ -261,15 +261,15 @@ modifies original string
  */
 void str::operator+=(str otherString)
 {
-	assert (otherString._length >= 1);
-	otherString._data[MAX_SIZE - 1]	=	'\0';
+	assert (otherString._length >= 1);				// concatenating an empty string
+	otherString._data[MAX_SIZE - 1]	=	'\0';			// ensure null termination
 	internalUpdlen();
-	internalInsertString(
+	internalInsertString(						// add the string
 		_data,
 		_length,
 		otherString._data
 	);
-	_data[MAX_SIZE - 1]		=	'\0';
+	_data[MAX_SIZE - 1]		=	'\0';			// ensure null termination
 }
 
 /**
@@ -279,28 +279,17 @@ modifies original string
  */
 void str::operator+=(const char* otherString)
 {
-	assert (otherString != nullptr);
-	assert (strlen(otherString) >= 1);
-	strncpy_s(
-		OPERATION_BUFFER,
-		otherString,
-		MAX_SIZE
-	);
+	assert (otherString != nullptr);				// const char* is nullptr
+	assert (strlen(otherString) >= 1);				// const char* is empty
 
-	OPERATION_BUFFER[MAX_SIZE - 1]	=	'\0';
 	internalUpdlen();
 	internalInsertString(
 		_data, 
 		_length,
-		OPERATION_BUFFER
+		(char*)otherString
 	);
-
 	_data[MAX_SIZE - 1]		=	'\0';
-	cMemSet(
-		OPERATION_BUFFER, 
-		MAX_SIZE, 
-		'\0'
-	);
+
 }
 
 /**
@@ -625,8 +614,6 @@ void str::internalInsertString(char* dest, int start, char* src) {
 	assert (start > 0);
 	assert (src != nullptr);
 
-
-
 	for (size_t i = start; i < MAX_SIZE; i++, x++)
 	{
 		dest[i]		=	src[x];
@@ -650,8 +637,8 @@ returns 0 if strings are equal
 @param str& string
 @param str& / const char* / char[] string2
  */
-template<class _T>
-inline int strcmp(str& string, _T& string2)
+template<class _ElemType>
+inline int strcmp(str& string, _ElemType& string2)
 {
 	return string.compare(string2);
 }
@@ -661,8 +648,8 @@ returns 0 if strings are equal up to n length
 @param str& string
 @param str& / const char* / char[] string2
  */
-template<class _T>
-inline int strncmp(str& string, _T& string2, size_t n)
+template<class _ElemType>
+inline int strncmp(str& string, _ElemType& string2, size_t n)
 {
 	return string.compareUntil(string2, n);
 }
@@ -673,8 +660,8 @@ returns index of first string difference
 @param str& string
 @param str& / const char* / char[] string2
  */
-template<class _T>
-int strstr(str& string, _T& searchString)
+template<class _ElemType>
+int strstr(str& string, _ElemType& searchString)
 {
 	return string.contains(searchString);
 }
@@ -693,11 +680,14 @@ concatenates the strings
 @param str& string1
 @param str& / const char* / char[] string2
  */
-template<class _T>
-str strcat(str& string1, _T& string2) {
+template<class _ElemType>
+str strcat(str& string1, _ElemType& string2) {
 	return string1 + str(string2);
 }
 
+/*
+* outputs the string to the console window
+*/
 void printf(str string) {
 	printf(string.c_str());
 }
