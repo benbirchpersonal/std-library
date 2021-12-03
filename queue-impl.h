@@ -35,23 +35,14 @@ inline queue<_ElemType>::queue()
 
 template <class _ElemType>
 bool queue<_ElemType>::enqueue(_ElemType elem) noexcept {
-	if(this->queueTail)
 }
 
 template <class _ElemType>
 _ElemType queue<_ElemType>::dequeue() noexcept {
-
+	assert(this->_ArraySize > 0); 								// Empty Queue
 }
 
 #endif /*QUEUE_IMPL*/
 
 
 
-/*
-
-	ab*?
-	a{5}(b|c)+
-
-
-
-*/
