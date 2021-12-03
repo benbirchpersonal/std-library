@@ -217,7 +217,7 @@ inline void arr<_ElemType>::swap(size_t index1, size_t index2)
 	
 	assert(loc1 != nullptr);
 	assert(loc2 != nullptr);
-	
+	assert(temp != nullptr);
 	
 	memcpy_s(
 	temp,
@@ -266,9 +266,8 @@ inline void arr<_ElemType>::print(size_t index1, size_t index2)
 
 	for (size_t i = index1; i < _ArraySize; i++)
 	{
-	_ElemType* current		=	 _ArrayLocation + i;
-	printf(*current);
-	printf(" ");
+		printf(*( _ArrayLocation + i));
+		printf(" ");
 	}
 }
 
