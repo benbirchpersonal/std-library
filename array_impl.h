@@ -2,8 +2,9 @@
 #define	ARRAYIMPL_H
 
 #include "include.h"
-
-#define	MAX_ARRAYSIZE 100
+#ifndef MAX_ARRAYSIZE
+#define	MAX_ARRAYSIZE 1000
+#endif
 static char ARRAY_OPERATION_BUFFER[MAX_ARRAYSIZE];
 
 template <class _ElemType>
