@@ -214,7 +214,11 @@ inline void arr<_ElemType>::swap(size_t index1, size_t index2)
 	_ElemType* loc1		=	(_ArrayLocation + index1);
 	_ElemType* loc2		=	(_ArrayLocation + index2);
 	_ElemType* temp		=	(_ElemType*) (malloc(_ElemSize));
-
+	
+	assert(loc1 != nullptr);
+	assert(loc2 != nullptr);
+	
+	
 	memcpy_s(
 	temp,
 	_ElemSize,
