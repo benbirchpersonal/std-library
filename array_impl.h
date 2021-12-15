@@ -10,36 +10,36 @@ static char ARRAY_OPERATION_BUFFER[MAX_ARRAYSIZE];
 template <class _ElemType>
 class arr {
 public:
-	constexpr			arr(size_t size)			noexcept;
-	constexpr			arr()					noexcept;
-	constexpr			arr(std::initializer_list<_ElemType> _List)	noexcept;
-					~arr()					noexcept;
+	constexpr					arr(size_t size)							noexcept;
+	constexpr					arr()										noexcept;
+	constexpr					arr(std::initializer_list<_ElemType> _List)	noexcept;
+								~arr()										noexcept;
 
-			_ElemType&	operator[](size_t i);
+				_ElemType&		operator[](size_t i);
 
-	_NODISCARD	size_t		count()					noexcept;
+	_NODISCARD	size_t			count()										noexcept;
 
-	_NODISCARD	_ElemType&	first()					noexcept;
-	_NODISCARD	_ElemType&	last()					noexcept;
+	_NODISCARD	_ElemType&		first()										noexcept;
+	_NODISCARD	_ElemType&		last()										noexcept;
 
-	_NODISCARD	int		findFirstOf(_ElemType search);
-	_NODISCARD	int		findLastOf(_ElemType search);
+	_NODISCARD	int				findFirstOf(_ElemType search);
+	_NODISCARD	int				findLastOf(_ElemType search);
 
-	_NODISCARD	stack<size_t>  find(_ElemType search);
+	_NODISCARD	stack<size_t> 	find(_ElemType search);
 
-			void		swap(size_t index1, size_t index2);
-			void		print();
-			void		print(size_t index1, size_t index2);
+				void			swap(size_t index1, size_t index2);
+				void			print();
+				void			print(size_t index1, size_t index2);
 
 
-	using		iterator =	_ElemType*;
-	_NODISCARD	iterator	begin()					const;
-	_NODISCARD	iterator	end()					const;
+	using		iterator 	=	_ElemType*;
+	_NODISCARD	iterator		begin()										const noexcept;
+	_NODISCARD	iterator		end()										const noexcept;
 
 protected:
 
-	size_t	_ElemSize;
-	size_t	_ArraySize;
+	size_t		_ElemSize;
+	size_t		_ArraySize;
 	_ElemType*	_ArrayLocation;
 };
 
@@ -48,12 +48,14 @@ template<class _ElemType>
 constexpr arr<_ElemType>::arr(size_t size) noexcept
 {
 	assert(size < MAX_ARRAYSIZE);
+
 #ifdef DEBUG
 	printf("\ncreated \n");
 #endif
-	_ElemSize		=	sizeof(_ElemType);
-	_ArraySize		=	size;
-	_ArrayLocation  	=	(_ElemType*)malloc(_ElemSize * _ArraySize);
+
+	_ElemSize				=		sizeof(_ElemType);
+	_ArraySize				=		size;
+	_ArrayLocation  		=		(_ElemType*)malloc(_ElemSize * _ArraySize);
 }
 
 /*
@@ -68,9 +70,9 @@ constexpr arr<_ElemType>::arr() noexcept
 	printf("\ncreated \n");
 #endif
 
-	_ElemSize		=	sizeof(_ElemType);
-	_ArraySize		=	0;
-	_ArrayLocation		=	nullptr;
+	_ElemSize				=		sizeof(_ElemType);
+	_ArraySize				=		0;
+	_ArrayLocation			=		nullptr;
 }
 
 /*
@@ -85,19 +87,20 @@ constexpr arr<_ElemType>::arr(std::initializer_list<_ElemType> _List) noexcept
 	printf("\ncreated \n");
 #endif
 
-	_ElemSize		=	sizeof(_ElemType);
-	_ArraySize		=	_List.size();
-	_ArrayLocation		=	(_ElemType*) malloc(_ElemSize * _ArraySize);
+	_ElemSize				=		sizeof(_ElemType);
+	_ArraySize				=		_List.size();
+	_ArrayLocation			=		reinterpret_cast<_ElemType*> malloc( _ElemSize * _ArraySize );
 
-	for (size_t i = 0; i < _ArraySize; i++)
-	{
-	_ElemType temp		=	_ElemType(*(_List.begin() + i));
-	memcpy_s(
-		_ArrayLocation + i,
-		_ElemSize,
-		&temp,
-		_ElemSize
-	);
+	for (size_t i = 0; i < _ArraySize; i++) {
+		_ElemType temp		=		_ElemType(*(_List.begin() + i));
+
+		memcpy_s(
+			_ArrayLocation + i,
+			_ElemSize,
+			&temp,
+			_ElemSize
+		);
+
 	}
 }
 
@@ -164,9 +167,9 @@ _NODISCARD int arr<_ElemType>::findFirstOf(_ElemType search)
 {
 	for (size_t i = 0; i < _ArraySize; i++)
 	{
-	_ElemType curr		=	*(_ArrayLocation + i);
-	if (search == curr)
-		return i;
+		_ElemType curr		=		*(_ArrayLocation + i);
+		if (search == curr)
+			return i;
 	}
 	return -1;
 }
@@ -182,9 +185,9 @@ _NODISCARD int arr<_ElemType>::findLastOf(_ElemType search)
 {
 	for (size_t i = _ArraySize - 1; i >= 0; i--)
 	{
-	_ElemType curr		=	* ( _ArrayLocation + i );
-	if (search == curr)
-		return i;
+		_ElemType curr		=		* ( _ArrayLocation + i );
+		if (search == curr)
+			return i;
 	}
 	return -1;
 }
@@ -193,7 +196,6 @@ _NODISCARD int arr<_ElemType>::findLastOf(_ElemType search)
 * Returns a dynamic array of the indexes of the occurances of a value in the array
 * @param searchTerm
 */
-
 template<class _ElemType>
 _NODISCARD stack<size_t> arr<_ElemType>::find(_ElemType search)
 {
@@ -201,9 +203,9 @@ _NODISCARD stack<size_t> arr<_ElemType>::find(_ElemType search)
 
 	for (size_t i = 0; i < _ArraySize; i++)
 	{
-	_ElemType curr		=	*(_ArrayLocation + i);
-	if (search == curr)
-		foundArray.push(i);
+		_ElemType curr		=		*(_ArrayLocation + i);
+		if (search == curr)
+			foundArray.push(i);
 	}
 	return foundArray;
 }
@@ -212,9 +214,9 @@ _NODISCARD stack<size_t> arr<_ElemType>::find(_ElemType search)
 template<class _ElemType>
 inline void arr<_ElemType>::swap(size_t index1, size_t index2)
 {
-	_ElemType* loc1		=	(_ArrayLocation + index1);
-	_ElemType* loc2		=	(_ArrayLocation + index2);
-	_ElemType* temp		=	(_ElemType*) (malloc(_ElemSize));
+	_ElemType* loc1		=		(_ArrayLocation + index1);
+	_ElemType* loc2		=		(_ArrayLocation + index2);
+	_ElemType* temp		=		(_ElemType*) (malloc(_ElemSize));		
 	
 	assert(loc1 != nullptr);
 	assert(loc2 != nullptr);
@@ -251,10 +253,12 @@ inline void arr<_ElemType>::print()
 {
 	for (size_t i = 0; i < _ArraySize; i++)
 	{
-	_ElemType* current		=	( _ArrayLocation + i );
-	printf(*current);
-	printf(" ");
+		_ElemType* current		=		( _ArrayLocation + i );
+		printf(*current);
+		printf(" ");
 	}
+
+	printf("\n");
 }
 
 
@@ -270,16 +274,19 @@ inline void arr<_ElemType>::print(size_t index1, size_t index2)
 		printf(*( _ArrayLocation + i));
 		printf(" ");
 	}
+	printf("\n");	
 }
 
 
 /* ITERATORS */
 
-template<class _ElemType> _NODISCARD _ElemType* arr<_ElemType>::begin() const {
+template<class _ElemType>
+_NODISCARD _ElemType* arr<_ElemType>::begin() const noexcept {
 	return  _ArrayLocation;
 }
 
-template<class _ElemType> _NODISCARD _ElemType* arr<_ElemType>::end() const {
+template<class _ElemType>
+_NODISCARD _ElemType* arr<_ElemType>::end() const noexcept {
 	return  (_ArrayLocation + _ArraySize);
 }
 
