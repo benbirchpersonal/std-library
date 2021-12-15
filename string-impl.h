@@ -13,57 +13,63 @@ class str {
 
 public:
 	// constructors
-	str()							noexcept;
-	str(str& x)						noexcept;
-	str(char x)						noexcept;
-	str(const char* x)					noexcept;
-	str(const str& s)					noexcept;
-	~str()							noexcept;
+	
+	str()															noexcept;
+	str(str& x)														noexcept;
+	str(char x)														noexcept;
+	str(const char* x)												noexcept;
+	str(const str& s)												noexcept;
+	~str()															noexcept;
 
 	// finders
-	_NODISCARD	int		contains(str& x)			noexcept;
-	_NODISCARD	int		contains(const char* x)			noexcept;
+
+	_NODISCARD	int			contains(str& x)						noexcept;
+	_NODISCARD	int			contains(const char* x)					noexcept;
 
 	// comparers
-	_NODISCARD	int		compare(str& x)				noexcept;
-	_NODISCARD	int		compare(const char* x)			noexcept;
-	_NODISCARD	int		compareUntil(str& x, size_t n)		noexcept;
-	_NODISCARD	int		compareUntil(const char* x, size_t n)	noexcept;
-	_NODISCARD	str		substr(size_t start, size_t length)	noexcept;
+
+	_NODISCARD	int			compare(str& x)							noexcept;
+	_NODISCARD	int			compare(const char* x)					noexcept;
+	_NODISCARD	int			compareUntil(str& x, size_t n)			noexcept;
+	_NODISCARD	int			compareUntil(const char* x, size_t n)	noexcept;
+	_NODISCARD	str			substr(size_t start, size_t length)		noexcept;
 
 	// removers
-	_NODISCARD	str		remove(char x)				noexcept;
-	_NODISCARD	str		removeAt(size_t x)			noexcept;
-	_NODISCARD	str		removeRange(size_t x, size_t size)	noexcept;
-	constexpr	void		clear()					noexcept;
+
+	_NODISCARD	str			remove(char x)							noexcept;
+	_NODISCARD	str			removeAt(size_t x)						noexcept;
+	_NODISCARD	str			removeRange(size_t x, size_t size)		noexcept;
+	constexpr	void		clear()									noexcept;
 
 	//misc
-	_NODISCARD	str		Xor(uint8_t key)			noexcept;
-	_NODISCARD	int		splitBy(str* stringArray, char x)	noexcept;
+
+	_NODISCARD	str			Xor(uint8_t key)						noexcept;
+	_NODISCARD	int			splitBy(str* stringArray, char x)		noexcept;
 
 	// getters and setters
-	_NODISCARD	const char* c_str()					noexcept;
-	_NODISCARD	size_t		length()				noexcept;
+
+	_NODISCARD	const char* c_str()									noexcept;
+	_NODISCARD	size_t		length()								noexcept;
 
 
 	template	<class _ElemType>
-	_NODISCARD	str		operator+(_ElemType otherString);
-	void		operator=(str& otherString);
-	void		operator=(str otherString);
-	void		operator=(const char* otherString);
-	void		operator=(int convertInt);
+	_NODISCARD	str			operator+(_ElemType otherString);
+				void		operator=(str& otherString);
+				void		operator=(str otherString);
+				void		operator=(const char* otherString);
+				void		operator=(int convertInt);
 	_NODISCARD	bool		operator==(str otherString);
-	void		operator+=(str otherString);
-	void		operator+=(const char* otherString);
-	void		operator+=(char otherString);
-	_NODISCARD	char& operator[](size_t index);
+				void		operator+=(str otherString);
+				void		operator+=(const char* otherString);
+				void		operator+=(char otherString);
+	_NODISCARD	char& 		operator[](size_t index);
 
 
 private:
 	// internal functions
-	void		internalUpdlen();
-	void		internalInsertString(char* dest, int start, char* src);
-	void		cMemSet(void* mem, size_t sizeInChars, char chr);
+				void		internalUpdlen();
+				void		internalInsertString(char* dest, int start, char* src);
+				void		cMemSet(void* mem, size_t sizeInChars, char chr);
 
 private:
 	char		_data[MAX_SIZE];
@@ -74,8 +80,8 @@ private:
 
 
 
-inline				void		printf(str string);
-inline				size_t		strlen(str string);
+inline						void	printf(str string);
+inline						size_t	strlen(str string);
 template<class _ElemType>	int		strcmp(str& string, _ElemType& string2);
 template<class _ElemType>	int		strncmp(str& string, _ElemType& string2, size_t n);
 template<class _ElemType>	int		strstr(str& string, _ElemType& searchString);
