@@ -28,18 +28,19 @@ private:
 template<class _ElemType>
 constexpr stack<_ElemType>::stack() noexcept
 {
-    this->_ArrayLocation		=	(_ElemType*) malloc(sizeof(_ElemType) * DEFAULT_ARRAYSIZE);
-    this->_ArraySize			=	0;
+    this->_ArrayLocation			=	(_ElemType*) malloc(sizeof(_ElemType) * DEFAULT_ARRAYSIZE);
+    this->_ArraySize				=	0;
     this->_ArrayAvailableSize		=	DEFAULT_ARRAYSIZE;
 }
 
 
+
 template<class _ElemType>
-constexpr stack<_ElemType>::stack(size_t reservedSpace) noexcept
+constexpr stack<_ElemType>::stack(size_t elements) noexcept
 {
 	this->_ArrayLocation		=	(_ElemType*) malloc(sizeof(_ElemType) * reservedSpace);
-	this->_ArraySize		=	0;
-	this->_ArrayAvailableSize	=	reservedSpace;
+	this->_ArraySize			=	0;
+
 }
 
 template<class _ElemType>
