@@ -44,7 +44,7 @@ bool queue<_ElemType>::enqueue(const _ElemType& elem) noexcept {
 		&elem,
 		_ElemSize,
 		_ElemSize
-		);
+	);
 }
 
 template<class _ElemType>
@@ -56,21 +56,19 @@ _NODISCARD inline bool stack<_ElemType>::realloc()
 	_ElemType* newLocation	=	reinterpret_cast<_ElemType*>(malloc(sizeof(_ElemType) * this->_ArrayAvailableSize * 2));
 	if (newLocation == nullptr)
 	return false;
-
+	this->_ArrayAvailableSize	*=	2;
 	memcpy_s(
 		newLocation,
-		sizeof(_ElemType) * this->_ArrayAvailableSize * 2,
+		sizeof(_ElemType) * this->_ArrayAvailableSize,
 		this->_ArrayLocation,
 		sizeof(_ElemType) * this->_ArraySize
 	);
 
 	free(this->_ArrayLocation);
 
-	this->_ArrayLocation		=	newLocation;
-	this->_ArrayAvailableSize	*=	2;
-
-	this->_queueHead 			= this->_ArrayLocation + relativeHead;
-	this->_queueTail 			= this->_ArrayLocation + relativeTail;
+	this->_ArrayLocation			=	newLocation;
+	this->_queueHead 			= 	this->_ArrayLocation + relativeHead;
+	this->_queueTail 			= 	this->_ArrayLocation + relativeTail;
 
 	return true;
 }
@@ -79,8 +77,6 @@ template <class _ElemType>
 _ElemType queue<_ElemType>::dequeue() noexcept {
 	assert(this->_ArraySize > 0);
 	assert(this->_queueHead != this->_queueTail);
-
-	free(this->_queueHead);							// Empty Queue
 	this->_queueHead--;
 	this->_ArraySize--;
 }
