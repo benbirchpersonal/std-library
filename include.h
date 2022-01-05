@@ -33,29 +33,5 @@ class circularQueue;
 #include "string-impl.h"
 
 
-/*
-CONVENTIONS
-
-class member function declarations:
-
-
-KEYWORD		RETURN_ElemTypeYPE		NAME	ARGS	KEYWORDS
-
-e.g
-
-_NODISCARD	size_t			count()			noexcept;
-			void			test()			noexcept;
-
-class member variable declarations:
-
-TYPE		NAME;
-
-e.g
-
-size_t		size;
-
-
-*/
-
 
 #endif
