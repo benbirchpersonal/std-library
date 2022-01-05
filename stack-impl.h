@@ -8,29 +8,34 @@
 template	<class _ElemType>
 class		stack : public arr<_ElemType> {
 public:
-    // constructors
-    constexpr				stack<_ElemType>()					noexcept;
-    constexpr				stack<_ElemType>(size_t reservedSpace)			noexcept;
-    constexpr				stack(stack<_ElemType>& copiedArr)			noexcept;
-    constexpr				stack(std::initializer_list<_ElemType> _List)		noexcept;
+	// constructors
+	constexpr						stack<_ElemType>()									noexcept;
+	constexpr						stack<_ElemType>(size_t reservedSpace)				noexcept;
+	constexpr						stack(stack<_ElemType>& copiedArr)					noexcept;
+	constexpr						stack(std::initializer_list<_ElemType> _List)		noexcept;
 
-    // push/pop
-			bool		push(_ElemType item)					noexcept;
-			_ElemType&	pop()							noexcept;
-private:
-    _NODISCARD		bool		realloc();
+	// push/pop
+					bool			push(_ElemType item)								noexcept;
+					_ElemType&		pop()												noexcept;
+					bool			reserve(size_t newSize);
+	
 
 private:
-    size_t		_ArrayAvailableSize;
+	_NODISCARD		bool			realloc();
+
+
+
+private:
+					size_t		_ArrayAvailableSize;
 };
 
 
 template<class _ElemType>
 constexpr stack<_ElemType>::stack() noexcept
 {
-    this->_ArrayLocation			=	(_ElemType*) malloc(sizeof(_ElemType) * DEFAULT_ARRAYSIZE);
-    this->_ArraySize				=	0;
-    this->_ArrayAvailableSize		=	DEFAULT_ARRAYSIZE;
+	this->_ArrayLocation = (_ElemType*)malloc(sizeof(_ElemType) * DEFAULT_ARRAYSIZE);
+	this->_ArraySize = 0;
+	this->_ArrayAvailableSize = DEFAULT_ARRAYSIZE;
 }
 
 
@@ -38,18 +43,18 @@ constexpr stack<_ElemType>::stack() noexcept
 template<class _ElemType>
 constexpr stack<_ElemType>::stack(size_t elements) noexcept
 {
-	this->_ArrayLocation		=	(_ElemType*) malloc(sizeof(_ElemType) * reservedSpace);
-	this->_ArraySize			=	0;
+	this->_ArrayLocation = (_ElemType*)malloc(sizeof(_ElemType) * elements * 2);
+	this->_ArraySize = 0;
 
 }
 
 template<class _ElemType>
 constexpr  stack<_ElemType>::stack(stack<_ElemType>& copiedArr) noexcept
 {
-	this->_ArrayLocation		=	(_ElemType*) malloc(sizeof(_ElemType) * copiedArr._ArraySize);
-	this->_ArraySize		=	copiedArr._ArraySize;
-	this->_ArrayAvailableSize	=	copiedArr._ArrayAvailableSize;
-	rsize_t copySize		=	copiedArr._ArraySize;
+	this->_ArrayLocation = (_ElemType*)malloc(sizeof(_ElemType) * copiedArr._ArraySize);
+	this->_ArraySize = copiedArr._ArraySize;
+	this->_ArrayAvailableSize = copiedArr._ArrayAvailableSize;
+	rsize_t copySize = copiedArr._ArraySize;
 
 	memcpy_s(
 		this->_ArrayLocation,
@@ -63,14 +68,14 @@ constexpr  stack<_ElemType>::stack(stack<_ElemType>& copiedArr) noexcept
 template<class _ElemType>
 constexpr  stack<_ElemType>::stack(std::initializer_list<_ElemType> _List) noexcept
 {
-	this->_ArrayLocation		=	(_ElemType*) malloc(sizeof(_ElemType)	* _List.size());
-	this->_ArraySize		=	_List.size();
-	this->_ArrayAvailableSize	=	DEFAULT_ARRAYSIZE > _List.size() ? DEFAULT_ARRAYSIZE : _List.size()	* 2;
+	this->_ArrayLocation = (_ElemType*)malloc(sizeof(_ElemType) * _List.size());
+	this->_ArraySize = _List.size();
+	this->_ArrayAvailableSize = DEFAULT_ARRAYSIZE > _List.size() ? DEFAULT_ARRAYSIZE : _List.size() * 2;
 
 	for (size_t i = 0; i < _List.size(); i++)
 	{
-		_ElemType temp		=	_ElemType(*(_List.begin() + i));
-		rsize_t elemSize	=	sizeof(_ElemType);
+		_ElemType temp = _ElemType(*(_List.begin() + i));
+		rsize_t elemSize = sizeof(_ElemType);
 
 		memcpy_s(
 			(_ElemType*)this->_ArrayLocation + i,
@@ -82,16 +87,16 @@ constexpr  stack<_ElemType>::stack(std::initializer_list<_ElemType> _List) noexc
 }
 
 template<class _ElemType>
- inline bool stack<_ElemType>::push(_ElemType item) noexcept
- {
-	assert (this->_ArrayLocation != nullptr);
+inline bool stack<_ElemType>::push(_ElemType item) noexcept
+{
+	assert(this->_ArrayLocation != nullptr);
 
 	if (this->_ArraySize >= (this->_ArrayAvailableSize - 1))
-	if (!realloc())
-		return false;
+		if (!realloc())
+			return false;
 
-	_ElemType* pushloc	=	(this->_ArrayLocation)+ this->_ArraySize;
-	*pushloc		=	_ElemType(item);
+	_ElemType* pushloc = (this->_ArrayLocation) + this->_ArraySize;
+	*pushloc = _ElemType(item);
 
 	this->_ArraySize++;
 	return true;
@@ -104,31 +109,53 @@ inline _ElemType& stack<_ElemType>::pop() noexcept
 	return (_ElemType) * (this->_ArrayLocation + this->_ArraySize - 1);
 }
 
+template<class _ElemType>
+inline bool stack<_ElemType>::reserve(size_t newSize)
+{
+	_ElemType* newLocation = nullptr;
+	newLocation = (_ElemType*)(malloc(sizeof(_ElemType) * newSize));
+
+	if (newLocation == nullptr)
+		return false;
+
+	memcpy_s(
+		newLocation,
+		sizeof(_ElemType) * this->_ArraySize,
+		this->_ArrayLocation,
+		sizeof(_ElemType) * this->_ArraySize
+	);
+
+	free(this->_ArrayLocation);
+	this->_ArrayLocation = newLocation;
+	this->_ArrayAvailableSize = newSize;
+	return true;
+}
+
 /*
-* Finds a new chunk of memory which the array can be placed in. 
+* Finds a new chunk of memory which the array can be placed in.
 */
 template<class _ElemType>
 _NODISCARD inline bool stack<_ElemType>::realloc()
 {
-	_ElemType* newLocation		=	nullptr;
-	newLocation			=	(_ElemType*)(malloc(sizeof(_ElemType) * this->_ArrayAvailableSize * 2));
+	_ElemType* newLocation = nullptr;
+	newLocation = (_ElemType*)(malloc(sizeof(_ElemType) * this->_ArrayAvailableSize * 2));
 
-	if (newLocation == nullptr) 
-	newLocation			=	(_ElemType*)(malloc(sizeof(_ElemType) * this->_ArrayAvailableSize + 1));
-    
 	if (newLocation == nullptr)
-	return false;
+		newLocation = (_ElemType*)(malloc(sizeof(_ElemType) * this->_ArrayAvailableSize + 1));
+
+	if (newLocation == nullptr)
+		return false;
 
 	memcpy_s(
-	newLocation,
-	sizeof(_ElemType) * this->_ArrayAvailableSize * 2,
+		newLocation,
+		sizeof(_ElemType) * this->_ArrayAvailableSize * 2,
 		this->_ArrayLocation,
-	sizeof(_ElemType) * this->_ArraySize
+		sizeof(_ElemType) * this->_ArraySize
 	);
 
 	free(this->_ArrayLocation);
-	this->_ArrayLocation		=	newLocation;
-	this->_ArrayAvailableSize	*=	2;
+	this->_ArrayLocation = newLocation;
+	this->_ArrayAvailableSize *= 2;
 	return true;
 }
 
