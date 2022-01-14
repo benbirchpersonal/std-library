@@ -13,9 +13,10 @@ public:
 	constexpr					arr(size_t size)								noexcept;
 	constexpr					arr()											noexcept;
 	constexpr					arr(std::initializer_list<_ElemType> _List)		noexcept;
+	constexpr					arr(cosnt arr<_ElemType>& _copiedArr)			noexcept;
 								~arr()											noexcept;
 
-				_ElemType&		operator[](size_t i);
+			_ElemType&		operator[](size_t i);
 
 	_NODISCARD	size_t			count()											noexcept;
 
@@ -102,6 +103,19 @@ constexpr arr<_ElemType>::arr(std::initializer_list<_ElemType> _List) noexcept
 		);
 
 	}
+}
+
+
+
+template<class _ElemType>
+arr<_ElemType>::arr(const arr<_ElemType>& copiedArr) noexcept
+{
+	memcpy_s(
+		&copiedArr,
+		sizeof(copiedArr),
+		this,
+		sizeof(this)
+	);
 }
 
 /*
