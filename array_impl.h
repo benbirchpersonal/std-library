@@ -28,9 +28,10 @@ public:
 
 	_NODISCARD	stack<size_t> 	find(_ElemType search);
 
-	void			swap(size_t index1, size_t index2);
-	void			print();
-	void			print(size_t index1, size_t index2);
+				void			swap(size_t index1, size_t index2);
+				void 			sort((_thiscall)(bool*)());
+				void			print();
+				void			print(size_t index1, size_t index2);
 
 
 	using		iterator = _ElemType*;
@@ -304,6 +305,18 @@ _NODISCARD _ElemType* arr<_ElemType>::end() const noexcept {
 	return  (_ArrayLocation + _ArraySize);
 }
 
+
+void  sort((_thiscall)(bool*)isGreaterThan()){
+	bool done = false;
+	while(!done) {
+		for(int i =0;i < this->_ArraySize - 1; i++) {
+			if(*isGreaterThan(*(_ArrayLocation + i), *(_ArrayLocation + i + 1))){
+				done = false;
+				this->swap(i,i+1);
+			}
+		}
+	}
+}
 
 
 
