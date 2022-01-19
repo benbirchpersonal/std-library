@@ -144,13 +144,5 @@ void pair::swap() {
 		temp,
 		sizeof(_ElemType)
 	);
-	
-	
-	
-	
+
 }
-
-
-
-
-
