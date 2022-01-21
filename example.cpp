@@ -1,6 +1,8 @@
-#include "array-impl.h"
-#include "initializer-list.h"
-
-int main() {
-	snd::arr<int> x ( (initList<int>)((1, 2,2,2,43,2,234,2,343,4) ));
+#define DEBUG
+#include "stack-impl.h"
+int main ()
+{
+	snd::arr<int> x {1,2,3,4,5};
+	for(int xx : x)
+		printf("%i,",xx);
 }
