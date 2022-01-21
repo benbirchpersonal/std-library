@@ -1,13 +1,18 @@
 #pragma once
-#include <cassert>
 #include <memory>
+#include <assert.h>
+#ifdef DEBUG
+extern void __assert ( const char* msg , const char* file , int line );
+#define assert(EX) (void)((EX) || (__assert (#EX, __FILE__, __LINE__),0))
+#else
+#define assert(EX) (void)(EX) ;
+#endif
+
 
 #define _STDLIB_BEGIN namespace snd {
 #define _STDLIB_END };
-
 template <typename T>
 class initList;
-
 
 _STDLIB_BEGIN
 
@@ -42,5 +47,5 @@ _STDLIB_END
 #include "stack-impl.h"
 #include "queue-impl.h"
 #include "circular-queue-impl.h"
-//#include "string-impl.h"
+#include "string-impl.h"
 #include "initializer-list.h"
