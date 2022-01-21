@@ -7,16 +7,19 @@
 #define	MAX_ARRAYSIZE 1000
 #endif
 
+
+_STDLIB_BEGIN
+
 template <class _ElemType>
 class arr {
 public:
 	constexpr					arr(size_t size)								noexcept;
 	constexpr					arr()											noexcept;
-	constexpr					arr(std::initializer_list<_ElemType> _List)		noexcept;
-	constexpr					arr(cosnt arr<_ElemType>& _copiedArr)			noexcept;
+	constexpr					arr(initList<_ElemType> _List)					noexcept;
+								arr(const arr<_ElemType>& _copiedArr)			noexcept;
 								~arr()											noexcept;
 
-			_ElemType&		operator[](size_t i);
+				_ElemType&		operator[](size_t i);
 
 	_NODISCARD	size_t			count()											noexcept;
 
@@ -29,12 +32,12 @@ public:
 	_NODISCARD	stack<size_t> 	find(_ElemType search);
 
 				void			swap(size_t index1, size_t index2);
-				void 			sort((_thiscall)(bool*)());
+				void			sort(bool(*greaterThan)(const _ElemType& obj1, const _ElemType obj2));
 				void			print();
 				void			print(size_t index1, size_t index2);
 
 
-	using		iterator = _ElemType*;
+	using		iterator =		_ElemType*;
 	_NODISCARD	iterator		begin()										const noexcept;
 	_NODISCARD	iterator		end()										const noexcept;
 	
@@ -81,28 +84,25 @@ constexpr arr<_ElemType>::arr() noexcept
 * Constructor
 */
 template<class _ElemType>
-constexpr arr<_ElemType>::arr(std::initializer_list<_ElemType> _List) noexcept
+constexpr arr<_ElemType>::arr(initList<_ElemType> _List) noexcept
 {
-	assert(_List.size() < MAX_ARRAYSIZE);
+	assert(sizeof(_List) / sizeof(_ElemType) < MAX_ARRAYSIZE);
 
 #ifdef DEBUG
 	printf("\ncreated \n");
 #endif
 
 	_ElemSize = sizeof(_ElemType);
-	_ArraySize = _List.size();
+	_ArraySize = _List._List.count();
 	_ArrayLocation = reinterpret_cast<_ElemType*> (malloc(_ElemSize * _ArraySize));
 
 	for (size_t i = 0; i < _ArraySize; i++) {
-		_ElemType temp = _ElemType(*(_List.begin() + i));
-
 		memcpy_s(
-			_ArrayLocation + i,
-			_ElemSize,
-			&temp,
-			_ElemSize
+			this,
+			sizeof(_List),
+			&_List._List,
+			sizeof(_List)
 		);
-
 	}
 }
 
@@ -305,12 +305,12 @@ _NODISCARD _ElemType* arr<_ElemType>::end() const noexcept {
 	return  (_ArrayLocation + _ArraySize);
 }
 
-
-void  sort((_thiscall)(bool*)isGreaterThan()){
+template<class _ElemType>
+void arr<_ElemType>::sort( bool(*greaterThan)(const _ElemType& obj1, const _ElemType obj2)) {
 	bool done = false;
 	while(!done) {
 		for(int i =0;i < this->_ArraySize - 1; i++) {
-			if(*isGreaterThan(*(_ArrayLocation + i), *(_ArrayLocation + i + 1))){
+			if(greaterThan(_ArrayLocation + i, _ArrayLocation + i + 1)){
 				done = false;
 				this->swap(i,i+1);
 			}
@@ -318,7 +318,7 @@ void  sort((_thiscall)(bool*)isGreaterThan()){
 	}
 }
 
-
+_STDLIB_END
 
 
 
