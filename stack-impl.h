@@ -9,14 +9,14 @@ class		stack : public arr<_ElemType>
 {
 public:
 	// constructors
-	constexpr						stack<_ElemType>()					noexcept;
-	constexpr						stack<_ElemType>(size_t reservedSpace)		noexcept;
-	constexpr						stack(stack<_ElemType>& copiedArr)			noexcept;
+	constexpr						stack<_ElemType>()						noexcept;
+	constexpr						stack<_ElemType>(size_t reservedSpace)	noexcept;
+	constexpr						stack(stack<_ElemType>& copiedArr)		noexcept;
 
 	// push/pop
-	bool			push(_ElemType item)									noexcept;
-	_ElemType& pop()												noexcept;
-	bool			reserve(size_t newSize);
+	bool							push(_ElemType item)					noexcept;
+	_ElemType& pop()														noexcept;
+	constexpr bool					reserve(size_t newSize);
 
 
 private:
@@ -28,7 +28,13 @@ private:
 
 
 public:			// INITIALIZER LIST CONTRUCTOR
-
+	/*
+	
+	this constructor is activated if all variadic arguments are of the same type, and follow all rules which constitute an 
+	initizlier list.
+	
+	Because of the simplistic nature of the stack, this can safely be done with only 1 pass, differing from the other array types.
+*/
 	template <typename... UList, REQUIRES(nonarrow_convertible<_ElemType, UList...>::value)>
 	stack(UList &&... vs)
 	{
@@ -44,12 +50,14 @@ private:
 	void process(U&& v, UList &&... vs)
 	{
 		this->push(forward<U>(v));
-		process(forward<UList>(vs)...);
+		process(forward<UList>(vs)...);		// recursively push items onto the stack
 	}
 	void process() {}
 };
 
-
+/*
+	creates empty stack with default size
+*/
 template<class _ElemType>
 constexpr stack<_ElemType>::stack() noexcept
 {
@@ -59,15 +67,19 @@ constexpr stack<_ElemType>::stack() noexcept
 }
 
 
-
+/*
+	creates empty stack with predefined size.
+*/
 template<class _ElemType>
 constexpr stack<_ElemType>::stack(size_t elements) noexcept
 {
-	this->_ArrayLocation = (_ElemType*) malloc(sizeof(_ElemType) * elements * 2);
+	this->_ArrayLocation = (_ElemType*)malloc(sizeof(_ElemType) * elements);
 	this->_ArraySize = 0;
 
 }
-
+/*
+	copy constructor.
+*/
 template<class _ElemType>
 constexpr  stack<_ElemType>::stack(stack<_ElemType>& copiedArr) noexcept
 {
@@ -83,28 +95,8 @@ constexpr  stack<_ElemType>::stack(stack<_ElemType>& copiedArr) noexcept
 		copySize
 	);
 }
-
 /*
-template<class _ElemType>
-constexpr  stack<_ElemType>::stack ( std::initializer_list<_ElemType> _List ) noexcept
-{
-	this->_ArrayLocation = ( _ElemType* ) malloc ( sizeof ( _ElemType ) * _List.size () );
-	this->_ArraySize = _List.size ();
-	this->_ArrayAvailableSize = DEFAULT_ARRAYSIZE > _List.size () ? DEFAULT_ARRAYSIZE : _List.size () * 2;
-
-	for ( size_t i = 0; i < _List.size (); i++ )
-	{
-		_ElemType temp = _ElemType ( *( _List.begin () + i ) );
-		rsize_t elemSize = sizeof ( _ElemType );
-
-		memcpy_s (
-			( _ElemType* ) this->_ArrayLocation + i ,
-			elemSize ,
-			&temp ,
-			elemSize
-		);
-	}
-}
+	push operation on the stack, adds an element to the top of the array
 */
 template<class _ElemType>
 inline bool stack<_ElemType>::push(_ElemType item) noexcept
@@ -121,16 +113,24 @@ inline bool stack<_ElemType>::push(_ElemType item) noexcept
 	this->_ArraySize++;
 	return true;
 }
-
+/*
+	pop operation on the stack, removes the top item from the array
+*/
 template<class _ElemType>
 inline _ElemType& stack<_ElemType>::pop() noexcept
 {
+	assert(this->_ArrayLocation != nullptr);
+	assert(this->_Arraysize > 0);				// empty stack check
 	this->_ArraySize--;
 	return (_ElemType) * (this->_ArrayLocation + this->_ArraySize - 1);
 }
 
+/*
+	reserves space for the array. reccomended for user if size is known as it allows it to be calculated at compile time.
+*/
+
 template<class _ElemType>
-inline bool stack<_ElemType>::reserve(size_t newSize)
+inline constexpr bool stack<_ElemType>::reserve(size_t newSize)
 {
 	_ElemType* newLocation = nullptr;
 	newLocation = (_ElemType*)(malloc(sizeof(_ElemType) * newSize));
