@@ -9,12 +9,12 @@ template <class _ElemType>
 class queue : public arr<_ElemType>
 {
 public:
-	queue<_ElemType>();
+								queue<_ElemType>();
 
-	bool		enqueue(const _ElemType& item)				noexcept;
-	_ElemType	dequeue()									noexcept;
-	_ElemType	operator[](size_t i)						noexcept;
-	void		rotate()									noexcept;
+	bool						enqueue(const _ElemType& item)				noexcept;
+	_ElemType					dequeue()									noexcept;
+	_ElemType					operator[](size_t i)						noexcept;
+	void						rotate()									noexcept;
 
 	using		iterator = _ElemType*;
 	_NODISCARD	iterator		begin()	const noexcept {
@@ -28,7 +28,7 @@ protected:
 
 
 	_NODISCARD  void		realloc();
-				bool		reserve(size_t newSize);
+	constexpr   bool 		reserve(size_t newSize);
 
 	_ElemType* _QueueHead;
 	_ElemType* _QueueTail;
@@ -38,17 +38,28 @@ protected:
 	size_t _ArrayAllocatedSize;
 
 
-public:			// INITIALIZER LIST CONSTRUCTORS
+public:	
+		
+// INITIALIZER LIST CONSTRUCTORS
 
-	template <typename... UList, REQUIRES(nonarrow_convertible<_ElemType, UList...>::value)>
+/*
+	this constructor is activated if all variadic arguments are of the same type, and follow all rules which constitute an 
+	initizlier list.
+	
+	The queue differs from the other array structures as it is more fragile in its structure in memory, as it constantly 
+	moves when objects are added and removed to accomodate, so the size of the array is calculated first in the first pass 
+	to prevent issues and unexpected behaviour.
+*/
+
+	template <typename... UList, REQUIRES(nonrrow_convertible<_ElemType, UList...>::value)>		// template magic - see helpers.h
 	queue(UList &&... vs)
 	{
 		this->_ElemSize = sizeof(_ElemType);
 		this->_ArraySize = 0;
 		this->_ArrayLocation = nullptr;
-		process(forward<UList>(vs)...);
+		process(forward<UList>(vs)...);			// determine size of initializer list
 
-		this->_ArrayLocation = (_ElemType*) malloc(sizeof(_ElemType) * this->_ArraySize * 2 );
+		this->_ArrayLocation = (_ElemType*)malloc(sizeof(_ElemType) * this->_ArraySize * 2);
 
 		this->_ArrayUpperBound = this->_ArrayLocation + (this->_ArraySize * 2);
 
@@ -58,21 +69,26 @@ public:			// INITIALIZER LIST CONSTRUCTORS
 		this->_QueueTail = _QueueHead;
 		this->_ArraySize = 0;
 
-		processSecondPass(forward<UList>(vs)...);
+		processSecondPass(forward<UList>(vs)...);	// copy initizlier list
 	}
 
 
 private:
-
+	/*
+		recursively incraments arraySize.
+	*/
 	template <typename U, typename... UList>
 	void process(U&& v, UList &&... vs)
 	{
 		this->_ArraySize++;
-		process(forward<UList>(vs)...);
+		process(forward<UList>(vs)...);		// recursively call with forward to remove one item from initializer list
 	}
+	
+	void process() {}		// recursive base case
 
-	void process(){}
-
+	/*
+		recursively copies elements into
+	*/
 	template <typename U, typename... UList>
 	void processSecondPass(U&& v, UList &&... vs)
 	{
@@ -85,7 +101,10 @@ private:
 };
 
 
-
+/*
+	default constructor, creates empty queue with default size, and places head and tail of queue in the center of allocated memory 
+	to allow for growth.
+*/
 template<class _ElemType>
 inline queue<_ElemType>::queue()
 {
@@ -101,7 +120,9 @@ inline queue<_ElemType>::queue()
 
 }
 
-
+/*
+	adds an item to the rear of the queue. returns false if failiure.
+*/
 template<class _ElemType>
 inline bool queue<_ElemType>::enqueue(const _ElemType& item) noexcept
 {
@@ -109,24 +130,15 @@ inline bool queue<_ElemType>::enqueue(const _ElemType& item) noexcept
 	{
 		*this->_QueueTail = _ElemType(item);
 		this->_ArraySize = 1;
-		//this->_QueueTail--;
 		return true;
 	}
 
 
 	if ((this->_QueueTail - 1) <= this->_ArrayLocation)
-		realloc();
+		realloc();														// reallocate if not big enough to accomodate.
 
 	this->_ArraySize++;
 	this->_QueueTail--;
-	/*
-	memcpy_s(
-		this->_QueueTail,
-		this->_ElemSize,
-		&item,
-		this->_ElemSize
-	);
-	*/
 	*this->_QueueTail = _ElemType(item);
 	return true;
 
@@ -148,6 +160,11 @@ inline _ElemType queue<_ElemType>::operator[](size_t i) noexcept
 	return *(this->begin() + i);
 }
 
+
+
+/*
+	Reallocates queue if too big for allocated space.
+*/
 template<class _ElemType>
 inline void queue<_ElemType>::realloc()
 {
@@ -155,7 +172,7 @@ inline void queue<_ElemType>::realloc()
 	{
 		_ElemType* tempArrayLocation = (_ElemType*)malloc(sizeof(_ElemType) * this->_ArrayAllocatedSize * 2);
 #ifdef DEBUG
-		memset(tempArrayLocation, 0, sizeof(_ElemType) * this->_ArrayAllocatedSize * 2);
+		memset(tempArrayLocation, 0, sizeof(_ElemType) * this->_ArrayAllocatedSize * 2);					// zeros memory for debug
 #endif
 		size_t centerDistanceFromTail = (this->_ArrayLocation + (this->_ArrayAllocatedSize / 2)) - this->_QueueTail;
 
@@ -179,7 +196,7 @@ inline void queue<_ElemType>::realloc()
 	{
 		_ElemType* tempArrayLocation = (_ElemType*)malloc(sizeof(_ElemType) * this->_ArrayAllocatedSize);
 #ifdef DEBUG
-		memset(tempArrayLocation, 0, sizeof(_ElemType) * this->_ArrayAllocatedSize);
+		memset(tempArrayLocation, 0, sizeof(_ElemType) * this->_ArrayAllocatedSize);						// zeros memory for debug
 #endif
 		size_t centerDistanceFromTail = (this->_ArrayLocation + (this->_ArrayAllocatedSize / 2)) - this->_QueueTail;
 
@@ -201,14 +218,23 @@ inline void queue<_ElemType>::realloc()
 
 
 }
-
+/*
+	Performs rotation on data. 
+	e.g. 12345 rotated becomes 51234 
+							   ^----|
+*/
 template<class _ElemType>
-inline void queue<_ElemType>::rotate() noexcept{
+inline void queue<_ElemType>::rotate() noexcept {
 	this->enqueue(this->dequeue());
 }
 
+
+/*
+	reserves space for the queue. reccomended for user if size is known as it allows it to be calculated at compile time.
+*/
+
 template<class _ElemType>
-inline bool queue<_ElemType>::reserve(size_t newSize)
+inline constexpr bool queue<_ElemType>::reserve(size_t newSize)
 {
 	assert(newSize > this->_ArrayAllocatedSize);
 	_ElemType* tempArrayLocation = (_ElemType*)malloc(sizeof(_ElemType) * newSize);
@@ -233,7 +259,6 @@ inline bool queue<_ElemType>::reserve(size_t newSize)
 	this->_ArrayLocation = tempArrayLocation;
 	return true;
 }
-
 
 _STDLIB_END
 #endif /*QUEUE_IMPL*/
