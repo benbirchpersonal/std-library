@@ -1,10 +1,10 @@
 #ifndef HELPERS_INCLUDED
 #define HELPERS_INCLUDED
 
-#include <memory>
+#include <memory>				// The only include in the project (hopefully)
 
 #ifdef DEBUG
-#define assert(EX) (void)(EX)
+#define assert(EX) asrt(EX);
 #else
 #define assert(EX) (void)(EX)
 #endif
@@ -13,8 +13,14 @@
 #define _STDLIB_BEGIN namespace snd {
 #define _STDLIB_END };
 
-template <typename T>
-class initList;
+
+inline asrt(bool x){
+	if(!x)
+		printf("assertion failed");
+}
+
+
+// Forward declaration of classes.
 
 _STDLIB_BEGIN
 
@@ -43,36 +49,49 @@ class circularQueue;
 _STDLIB_END
 
 
-
+// identity struct used to find type of object
 template<typename T>
 struct identity
 {
 	typedef T type;
 };
 
+
+// own implementation of std::forward
 template<typename T>
 T&& forward(typename identity<T>::type& param)
 {
 	return static_cast<T&&>(param);
 }
 
+
+// false type, templated alternative to the boolean value false
 struct false_type
 {
 	static constexpr bool value = false;
 	constexpr operator bool() const noexcept { return value; }
 };
+
+// true type, templated alternative to the boolean value true
 struct true_type
 {
 	static constexpr bool value = true;
 	constexpr operator bool() const noexcept { return value; }
 };
 
+
+// small template "function" which returns false_type if 2 objecs are not the same type.
 template<class T, class U>
 struct is_same : false_type {};
 
+
+
+// small template "function" which returns true_type if 2 objecs are the same type.
 template<class T>
 struct is_same<T, T> : true_type {};
 
+
+// my implementation of enable_if
 template <bool, typename T = void>
 struct enable_if
 {};
@@ -84,11 +103,11 @@ struct enable_if<true, T>
 };
 
 
-
+// my implementation of declval
 template<class T>
 typename T&& declval() noexcept;
 
-
+// bool sequence data structure
 template <bool...> struct bool_sequence {};
 
 template <bool... Bs>
@@ -96,8 +115,11 @@ using bool_and
 = is_same<bool_sequence<Bs...>,
 	bool_sequence<(Bs || true)...>>;
 
+
 template <typename T>
 true_type create(T v);
+
+// template magic for initializer list
 
 
 template <typename T, typename U>
@@ -119,43 +141,6 @@ using nonarrow_convertible
 
 
 # define REQUIRES(...)	typename enable_if<(__VA_ARGS__), bool>::type = true
-
-
-
-/*
-
-template <typename T>
-class initList
-{
-public:
-
-	snd::dynamicArray<T> _List;
-
-	template <typename... UList,
-		REQUIRES(nonarrow_convertible<T, UList...>::value)>
-		initList(UList &&... vs) //
-	{
-		_List.reserve(sizeof...(vs));
-		process(forward<UList>(vs)...);
-	}
-	template <typename U, typename... UList>
-	void process(U&& v, UList &&... vs)
-	{
-		_List.push(forward<U>(v));
-		process(forward<UList>(vs)...);
-	}
-	void process() {}
-
-	initList<T>(const initList<T>& copied)
-	{
-		this->_List = copied->_List;
-	}
-
-
-
-};
-
-*/
 
 
 
