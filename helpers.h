@@ -4,21 +4,16 @@
 #include <memory>				// The only include in the project (hopefully)
 
 #ifdef DEBUG
-#define assert(EX) asrt(EX);
+#define assert(EX) if(EX) printf("assertion failed");
+#define assert(EX, ARG) if(EX) printf("%s", ARG);
 #else
 #define assert(EX) (void)(EX)
+#define assert(EX, ARG) if(EX) printf("%s", ARG);
 #endif
 
 
 #define _STDLIB_BEGIN namespace snd {
 #define _STDLIB_END };
-
-
-inline asrt(bool x){
-	if(!x)
-		printf("assertion failed");
-}
-
 
 // Forward declaration of classes.
 
