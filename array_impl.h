@@ -61,7 +61,7 @@ public:			// INITIALIZER LIST CONSTRUCTORS
 
 
 private:
-
+	// epic compile time polymorphic variadic template recursive initializer list unpacking algorithm
 	template <typename U, typename... UList>
 	void process(U&& v, UList &&... vs)
 	{
