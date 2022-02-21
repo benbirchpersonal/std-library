@@ -91,7 +91,13 @@ int main()
 		printf("%i", x);
 	}
 	testEmptyArr[0] = 6;
-	testInitList[12] = 5; // expected crash here
+	try{
+		testInitList[12] = 5; // expected crash here	
+	}
+	catch(int err){
+		printf("crashed!");
+	}
+	
 }
 		   
 		   
