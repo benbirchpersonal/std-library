@@ -60,10 +60,10 @@ int main()
 	
 	// SPLIT BY TEST AND ARRAY INSTANCIATION TEST
 	
-	str strArr[4];
+	snd::str strArr[4];
 	
 	int count = splitBy(&strArr, ' ');
-	printf("%i items in array:, count);
+	printf("%i items in array:", count);
 	for(int i = 0; i < count; i++){
 		printf("%s", strArr[i]);	
 	}
@@ -71,5 +71,28 @@ int main()
 	printf("%i", strCCT1.length());
 	
 	// XOR TESTA
-	printf("%i", strCCT1.Xor(0b01010101));	       	
+	printf("%i", strCCT1.Xor(0b01010101));
+
+
+	// ARRAY TESTS
+
+	snd::arr<int> testEmptyArr(10);
+
+	snd::arr<int> testInitList {1,2,3,4,5,6,7,8,9,10};
+	snd::arr<int> testInitListAssignment = {1,2,3,4,5,6,7,8,9,10};
+
+	printf("initList length (exp 10) :%i", testInitList.count());
+	printf("initList assigment length (exp 10) : %i", testInitListAssignment.Count());
+	for(int x : testInitList){
+		printf("%i", x);
+	}
+
+	for(int x : testInitListAssignment){
+		printf("%i", x);
+	}
+	testEmptyArr[0] = 6;
+	testInitList[12] = 5; // expected crash here
 }
+		   
+		   
+	
