@@ -242,7 +242,10 @@ _NODISCARD stack<size_t> arr<_ElemType>::find(_ElemType search)
 	return foundArray;
 }
 
-
+/**
+* Swaps 2 elements in the array.
+* physical memory copy 
+*/
 template<class _ElemType>
 inline void arr<_ElemType>::swap(size_t index1, size_t index2)
 {
@@ -279,7 +282,10 @@ inline void arr<_ElemType>::swap(size_t index1, size_t index2)
 
 }
 
-
+/**
+* Swaps 2 elements in the array.
+* physical memory copy 
+*/
 template<class _ElemType>
 inline void arr<_ElemType>::print()
 {
@@ -292,23 +298,6 @@ inline void arr<_ElemType>::print()
 
 	printf("\n");
 }
-
-
-
-template<class _ElemType>
-inline void arr<_ElemType>::print(size_t index1, size_t index2)
-{
-	assert(index1 < _ArraySize);
-	assert(index2 < _ArraySize);
-
-	for (size_t i = index1; i < _ArraySize; i++)
-	{
-		printf(*(_ArrayLocation + i));
-		printf(" ");
-	}
-	printf("\n");
-}
-
 
 /* ITERATORS */
 
@@ -323,7 +312,10 @@ _NODISCARD _ElemType* arr<_ElemType>::end() const noexcept
 {
 	return  (_ArrayLocation + _ArraySize);
 }
-
+/**
+* takes in a fucntion which decides if 1 element of type T is greater than another
+* structure -> bool greaterThan(const T& n1, const T& n2); -> should return true if greater than and false if less than.
+*/
 template<class _ElemType>
 void arr<_ElemType>::sort(bool(*greaterThan)(const _ElemType& obj1, const _ElemType obj2))
 {
