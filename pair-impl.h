@@ -34,10 +34,8 @@ public:
 	const void	 operator=(const pair<_ElemType1, _ElemType2>& copy);
 	const _ElemType1& first();
 	const _ElemType2& second();
-	
-	
-	
-	pair<_ElemType1, _ElemType2> swap() noexcept;
+
+	const pair<_ElemType1, _ElemType2>& swap() noexcept;
 
 
 
@@ -141,7 +139,7 @@ very bad coding practices and unreadable and difficult to understand code.
 Implementation pretty simple, create temp and swap items and then free temp.
 */
 template <class _ElemType1, class _ElemType2>
-pair<_ElemType1, _ElemType2> pair<_ElemType1, _ElemType2>::swap() noexcept {
+const pair<_ElemType1, _ElemType2> pair<_ElemType1, _ElemType2>::swap()& noexcept {
 	_ElemType1* temp = (_ElemType1*)malloc(sizeof(_ElemType1));
 	assert(is_same<_ElemType1, _ElemType2>::value);				// objects of different types may not be swapped.
 	memcpy_s(
