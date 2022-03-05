@@ -34,7 +34,9 @@ public:
 	const void	 operator=(const pair<_ElemType1, _ElemType2>& copy);
 	const _ElemType1& first();
 	const _ElemType2& second();
-
+	
+	
+	
 	pair<_ElemType1, _ElemType2> swap() noexcept;
 
 
@@ -43,8 +45,6 @@ private:
 	_ElemType1* _first;
 	_ElemType2* _second;
 };
-
-
 
 /*
 Defualt constructor for pair. allocates space for 2 objects but leaves uninitialzied.
