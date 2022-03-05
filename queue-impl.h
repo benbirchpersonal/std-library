@@ -69,7 +69,7 @@ public:
 		this->_QueueTail = _QueueHead;
 		this->_ArraySize = 0;
 
-		processSecondPass(forward<UList>(vs)...);	// copy initizlier list
+		processSecondPass(forward<UList>(vs)...);	// copy initizlier list 
 	}
 
 
@@ -84,7 +84,7 @@ private:
 		process(forward<UList>(vs)...);		// recursively call with forward to remove one item from initializer list
 	}
 	
-	void process() {}		// recursive base case
+	void process() {}		// empty recursive base case
 
 	/*
 		recursively copies elements into
