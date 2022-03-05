@@ -134,6 +134,13 @@ template <typename T, typename... Ts>
 using nonarrow_convertible
 = bool_and<is_nonarrow_convertible<Ts, T>::value...>;
 
+template<size_t, 0>
+one_type create(size_t v);
+
+template<size_t>
+zero_type create(size_t v);
+
+
 
 #define REQUIRES(...)	typename enable_if<(__VA_ARGS__), bool>::type = true
 
