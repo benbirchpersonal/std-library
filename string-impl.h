@@ -127,7 +127,7 @@ str::str(str& copyString) noexcept
 {
 	assert(&copyString != nullptr);			   // copied string is nullptr
 #ifdef DEBUG
-	printf("\n[%s] copied \n", _data);
+	printf("\n[%s] copied \n", copyString.c_str());
 #endif
 	_data = (char*)malloc(sizeof(copyString));
 	rsize_t dataSize = sizeof(_data);
@@ -145,20 +145,20 @@ const Copy Constructor,
 Copies a string from const value
 @param const str& baseString
  */
-str::str(const str& x) noexcept
+str::str(const str& copyString ) noexcept
 {
-	assert(&x != nullptr);						// x is nullptr
+	assert ( &copyString != nullptr );			   // copied string is nullptr
 #ifdef DEBUG
-	printf("\ncopied \n");
+	printf ( "\n[%s] copied \n" , _data );
 #endif
-	if (_data[_length - 1] != '/0')
-		_data = (char*)malloc(sizeof(x._data) + 1);
-	_length = x._length;
-	memcpy_s(									 // Copies the string data into the new string object
-		_data,
-		sizeof(x._data),
-		(const void*)x._data,
-		sizeof(x._data)
+	_data = ( char* ) malloc ( sizeof ( copyString ) );
+	rsize_t dataSize = sizeof ( _data );
+	_length = copyString._length;
+	memcpy_s (								   // Copies the string data into the new string object
+		   _data ,
+		   dataSize ,
+		   ( const void* ) copyString._data ,
+		   dataSize
 	);
 }
 
@@ -695,4 +695,3 @@ str strcat(str& string1, _ElemType& string2)
 
 _STDLIB_END
 #endif /* !STRINGIMPL_H */
-
