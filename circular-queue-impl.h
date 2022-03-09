@@ -11,30 +11,30 @@ class circularQueue : public arr<_ElemType, size>
 public:
 	circularQueue<_ElemType, size> ( size_t queueSize );
 
-	bool		enqueue ( const _ElemType& item )				noexcept;
-	_ElemType	dequeue ()									noexcept;
-	_ElemType	operator[]( size_t i )						noexcept;
-	void		rotate ()									noexcept;
+			bool		enqueue ( const _ElemType& item )				noexcept;
+			_ElemType	dequeue ()									noexcept;
+			_ElemType	operator[]( size_t i )						noexcept;
+			void		rotate ()									noexcept;
 
 
 
-	using		iterator = _ElemType*;
-	_NODISCARD	iterator		begin ()	const noexcept
-	{
-		return this->_ArrayLocation + _QueueHead;
-	}
-	_NODISCARD	iterator		end ()	const noexcept
-	{
-		return this->_ArrayLocation + _QueueTail + 1;
-	}
+			using		iterator = _ElemType*;
+			_NODISCARD	iterator		begin ()	const noexcept
+			{
+				return this->_ArrayLocation + _QueueHead;
+			}
+			_NODISCARD	iterator		end ()	const noexcept
+			{
+				return this->_ArrayLocation + _QueueTail + 1;
+			}
 public:
 
 
-	_NODISCARD  void		realloc ();
-	bool		reserve ( size_t newSize );
+_NODISCARD  void		realloc ();
+			bool		reserve ( size_t newSize );
 
-	int _QueueHead;
-	int _QueueTail;
+			int 		_QueueHead;
+			int 		_QueueTail;
 
 
 
