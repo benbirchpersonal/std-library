@@ -12,42 +12,42 @@ template <class _ElemType, size_t size>
 class arr
 {
 public:
-	constexpr					arr ()										noexcept;
+
+constexpr					arr()	noexcept;
+							arr (const arr<_ElemType, size>& _copiedArr)	noexcept;
+							~arr()											noexcept;
+
+							_ElemType& 		operator[]( size_t i );
+
+_NODISCARD	size_t			count()											noexcept;
+
+_NODISCARD	_ElemType& 		first()											noexcept;
+_NODISCARD	_ElemType& 		last()											noexcept;
+
+_NODISCARD	int				findFirstOf(_ElemType search);
+_NODISCARD	int				findLastOf(_ElemType search);
+
+_NODISCARD	stack<size_t> 	find( _ElemType search);
+
+			void			swap(size_t index1 , size_t index2);
 
 
-
-	arr ( const arr<_ElemType, size>& _copiedArr )					noexcept;
-	~arr ()													noexcept;
-
-	_ElemType& operator[]( size_t i );
-
-	_NODISCARD	size_t			count ()											noexcept;
-
-	_NODISCARD	_ElemType& first ()											noexcept;
-	_NODISCARD	_ElemType& last ()											noexcept;
-
-	_NODISCARD	int				findFirstOf ( _ElemType search );
-	_NODISCARD	int				findLastOf ( _ElemType search );
-
-	_NODISCARD	stack<size_t> 	find ( _ElemType search );
-
-	void			swap ( size_t index1 , size_t index2 );
+			void            sort( bool( *greaterThan )( _ElemType obj1 , _ElemType obj2 ) );
+			void			print();
+			void			print( size_t index1 , size_t index2 );
 
 
-	void                    sort ( bool( *greaterThan )( _ElemType obj1 , _ElemType obj2 ) );
-	void			print ();
-	void			print ( size_t index1 , size_t index2 );
-
-
-	using		iterator = _ElemType*;
-	_NODISCARD	iterator		begin ()										const noexcept;
-	_NODISCARD	iterator		end ()										const noexcept;
+			using		iterator = _ElemType*;
+			_NODISCARD	iterator		begin ()							const noexcept;
+			_NODISCARD	iterator		end ()								const noexcept;
 
 protected:
-	_ElemType* _ArrayLocation;
-	size_t		_ElemSize;
-	size_t		_ArraySize;
-	size_t		_InitListcurrentIndex;
+
+			_ElemType*  _ArrayLocation;
+			size_t		_ElemSize;
+			size_t		_ArraySize;
+			size_t		_InitListcurrentIndex;
+
 
 public:			// INITIALIZER LIST CONSTRUCTORS
 
@@ -97,7 +97,9 @@ private:
 };
 
 
-
+/*
+Default constructor, takes a size as a template argument and creates an empty array of this size.
+*/
 template<class _ElemType, size_t size>
 constexpr arr<_ElemType, size>::arr ( ) noexcept
 {
@@ -112,7 +114,9 @@ constexpr arr<_ElemType, size>::arr ( ) noexcept
 	_ArrayLocation = ( _ElemType* ) malloc ( _ElemSize * _ArraySize );
 }
 
-
+/*
+Copy constructor.
+*/
 template<class _ElemType, size_t size>
 arr<_ElemType, size>::arr ( const arr<_ElemType, size>& copiedArr ) noexcept
 {
@@ -140,7 +144,7 @@ inline arr<_ElemType, size>::~arr () noexcept
 
 
 /*
-* accesses an index of the array
+* accesses an index of the array, zero-indexed
 */
 template<class _ElemType, size_t size>
 inline _ElemType& arr<_ElemType, size>::operator[]( size_t i )
@@ -241,25 +245,25 @@ inline void arr<_ElemType, size>::swap ( size_t index1 , size_t index2 )
 	_ElemType* loc2 = ( _ArrayLocation + index2 );
 	_ElemType* temp = ( _ElemType* ) ( malloc ( _ElemSize ) );
 
-	assert ( loc1 != nullptr );
-	assert ( loc2 != nullptr );
-	assert ( temp != nullptr );
+	assert( loc1 != nullptr );
+	assert( loc2 != nullptr );
+	assert( temp != nullptr );
 
-	memcpy_s (
+	memcpy_s(
 		temp ,
 		_ElemSize ,
 		loc1 ,
 		_ElemSize
 	);
 
-	memcpy_s (
+	memcpy_s(
 		loc1 ,
 		_ElemSize ,
 		loc2 ,
 		_ElemSize
 	);
 
-	memcpy_s (
+	memcpy_s(
 		loc2 ,
 		_ElemSize ,
 		temp ,
@@ -271,17 +275,16 @@ inline void arr<_ElemType, size>::swap ( size_t index1 , size_t index2 )
 }
 
 /**
-* Swaps 2 elements in the array.
-* physical memory copy
+* prints each item in array
 */
 template<class _ElemType, size_t size>
-inline void arr<_ElemType, size>::print ()
+inline void arr<_ElemType, size>::print()
 {
 	for ( size_t i = 0; i < _ArraySize; i++ )
 	{
-		_ElemType* current = ( _ArrayLocation + i );
-		printf ( *current );
-		printf ( " " );
+		_ElemType* current = (_ArrayLocation + i);
+		printf( *current );
+		printf( " " );
 	}
 
 	printf ( "\n" );
