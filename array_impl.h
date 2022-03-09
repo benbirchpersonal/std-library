@@ -52,49 +52,64 @@ protected:
 public:			// INITIALIZER LIST CONSTRUCTORS
 
 	template <typename... UList , REQUIRES ( nonarrow_convertible<_ElemType , UList...>::value )>
-	arr ( UList&&... vs )
-	{
-		this->_ElemSize = sizeof ( _ElemType );
-		this->_ArraySize = 0;
-		this->_ArrayLocation = nullptr;
-		size_t tempsz = size;
-		
-		process ( forward<UList> ( vs )... );
-		assert ( tempsz >= _ArraySize );
-		processSecondPass ( forward<UList> ( vs )... );
-	}
-
+	arr ( UList&&... vs );
+	
 
 private:
+	
 	//  recursive initializer list unpacking algorithm
 	template <typename U , typename... UList>
-	void process ( U&& v , UList&&... vs )
-	{
-		_ArraySize++;
-		process ( forward<UList> ( vs )... );
-	}
-
-	void process ()
-	{
-		_InitListcurrentIndex = 0;
-		_ArrayLocation = (_ElemType*)malloc ( _ElemSize * _ArraySize );
-	}
-
+	void process ( U&& v , UList&&... vs );
+	
+	void process ();
+	
 	template <typename U , typename... UList>
-	void processSecondPass ( U&& v , UList&&... vs )
-	{
-		auto x = forward<U> ( v );
-		memcpy_s (
-			_ArrayLocation + _InitListcurrentIndex ,
-			sizeof ( _ElemType ) ,
-			&x ,
-			sizeof ( _ElemType )
-		);
-		_InitListcurrentIndex++;
-		processSecondPass ( forward<UList> ( vs )... );
-	}
+	void processSecondPass ( U&& v , UList&&... vs );
+	
 	void processSecondPass () {}
+	
 };
+
+template <typename U , typename... UList>
+void arr<_ElemType, size>::process ( U&& v , UList&&... vs )
+{
+	_ArraySize++;
+	process ( forward<UList> ( vs )... );
+}
+
+void arr<_ElemType, size>::process ()
+{
+	_InitListcurrentIndex = 0;
+	_ArrayLocation = (_ElemType*)malloc ( _ElemSize * _ArraySize );
+}
+
+template <typename U , typename... UList>
+void arr<_ElemType, size>::processSecondPass ( U&& v , UList&&... vs )
+{
+	auto x = forward<U> ( v );
+	memcpy_s (
+		_ArrayLocation + _InitListcurrentIndex ,
+		sizeof ( _ElemType ) ,
+		&x ,
+		sizeof ( _ElemType )
+	);
+	_InitListcurrentIndex++;
+	processSecondPass ( forward<UList> ( vs )... ); 
+}
+
+
+template <typename... UList , REQUIRES ( nonarrow_convertible<_ElemType , UList...>::value )>
+constexpr arr<_ElemType, size>::arr( UList&&... vs )
+{
+	this->_ElemSize = sizeof ( _ElemType );
+	this->_ArraySize = 0;
+	this->_ArrayLocation = nullptr;
+	size_t tempsz = size;
+
+	process ( forward<UList> ( vs )... );
+	assert ( tempsz >= _ArraySize );
+	processSecondPass ( forward<UList> ( vs )... );
+}
 
 
 /*
