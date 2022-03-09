@@ -24,19 +24,20 @@ pair<int, const char*> x = {1,"test"};
 */
 
 _STDLIB_BEGIN
+
 template <class _ElemType1 , class _ElemType2>
 class pair
 {
 public:
-	pair ();
-	pair ( const _ElemType1& , const _ElemType2& );
-	~pair ();
+								pair();
+								pair( const _ElemType1& , const _ElemType2& );
+								~pair();
 
-	const void	 operator=( const pair<_ElemType1 , _ElemType2>& copy );
-	const _ElemType1& first ();
-	const _ElemType2& second ();
+			const void 			operator=( const pair<_ElemType1 , _ElemType2>& copy );
+_NOEXCEPT	const _ElemType1&	first();
+_NOEXCEPT	const _ElemType2&	second();
 
-	const pair<_ElemType1 , _ElemType2>& swap () noexcept;
+	const pair<_ElemType1 , _ElemType2>& swap() noexcept;
 
 
 
