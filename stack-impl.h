@@ -1,183 +1,267 @@
-#ifndef	DYNAMIC_ARRAY_IMPL
-#define	DYNAMIC_ARRAY_IMPL
-#include "helpers.h"
-#define	DEFAULT_ARRAYSIZE 100
-_STDLIB_BEGIN
+#ifndef	QUEUE_IMPL
+#define	QUEUE_IMPL
 
-template	<class _ElemType>
-class		stack : public arr<_ElemType, 0>
+#include "helpers.h"
+#define DEFAULT_QUEUE_SIZE 100
+
+_STDLIB_BEGIN
+template <class _ElemType>
+class queue : public arr<_ElemType, 0>
 {
 public:
-	// constructors
-	constexpr						stack<_ElemType> ()						noexcept;
-	constexpr						stack<_ElemType> ( size_t reservedSpace )	noexcept;
-	constexpr						stack ( stack<_ElemType>& copiedArr )		noexcept;
+	queue<_ElemType> ();
 
-	// push/pop
-	bool							push ( _ElemType item )					noexcept;
-	_ElemType& pop ()														noexcept;
-	constexpr bool					reserve ( size_t newSize );
+	bool						enqueue ( const _ElemType& item )			noexcept;
+	_ElemType					dequeue ()									noexcept;
+	_ElemType					operator[]( size_t i )						noexcept;
+	void						rotate ()									noexcept;
+
+	using		iterator = _ElemType*;
+	_NODISCARD	iterator		begin ()									const noexcept
+	{
+		return _QueueTail;
+	}
+	_NODISCARD	iterator		end ()										const noexcept
+	{
+		return _QueueHead + 1;
+	}
+
+protected:
 
 
-private:
-	_NODISCARD		bool			realloc ();
+	_NODISCARD  void		realloc ();
+	constexpr   bool 		reserve ( size_t newSize );
+
+	_ElemType* _QueueHead;
+	_ElemType* _QueueTail;
+
+	_ElemType* _ArrayUpperBound;
+
+	size_t _ArrayAllocatedSize;
 
 
-private:
-	size_t		_ArrayAvailableSize;
+public:
 
+	// INITIALIZER LIST CONSTRUCTORS
 
-public:			// INITIALIZER LIST CONTRUCTOR
 	/*
+		this constructor is activated if all variadic arguments are of the same type, and follow all rules which constitute an
+		initizlier list.
 
-	this constructor is activated if all variadic arguments are of the same type, and follow all rules which constitute an
-	initizlier list.
+		The queue differs from the other array structures as it is more fragile in its structure in memory, as it constantly
+		moves when objects are added and removed to accomodate, so the size of the array is calculated first in the first pass
+		to prevent issues and unexpected behaviour.
+	*/
 
-	Because of the simplistic nature of the stack, this can safely be done with only 1 pass, differing from the other array types.
-*/
-	template <typename... UList , REQUIRES ( nonarrow_convertible<_ElemType , UList...>::value )>
-	stack ( UList&&... vs )
+	template <typename... UList , REQUIRES ( nonrrow_convertible<_ElemType , UList...>::value )>		// template magic - see helpers.h
+	queue ( UList&&... vs )
 	{
 		this->_ElemSize = sizeof ( _ElemType );
 		this->_ArraySize = 0;
 		this->_ArrayLocation = nullptr;
-		this->reserve ( sizeof...( vs ) );
-		process ( forward<UList> ( vs )... );
+		process ( forward<UList> ( vs )... );			// determine size of initializer list
+
+		this->_ArrayLocation = ( _ElemType* ) malloc ( sizeof ( _ElemType ) * this->_ArraySize * 2 );
+
+		this->_ArrayUpperBound = this->_ArrayLocation + ( this->_ArraySize * 2 );
+
+		this->_ArrayAllocatedSize = ( sizeof ( _ElemType ) * this->_ArraySize * 2 );
+
+		this->_QueueHead = this->_ArrayLocation + ( ( this->_ArraySize * 2 ) / 2 );
+		this->_QueueTail = _QueueHead;
+		this->_ArraySize = 0;
+
+		processSecondPass ( forward<UList> ( vs )... );	// copy initizlier list 
 	}
 
+
 private:
+	/*
+		recursively incraments arraySize.
+	*/
 	template <typename U , typename... UList>
 	void process ( U&& v , UList&&... vs )
 	{
-		this->push ( forward<U> ( v ) );
-		process ( forward<UList> ( vs )... );		// recursively push items onto the stack
+		this->_ArraySize++;
+		process ( forward<UList> ( vs )... );		// recursively call with forward to remove one item from initializer list
 	}
-	void process () {}
+
+	void process () {}		// empty recursive base case
+
+	/*
+		recursively copies elements into
+	*/
+	template <typename U , typename... UList>
+	void processSecondPass ( U&& v , UList&&... vs )
+	{
+		auto x = forward<U> ( v );
+		this->enqueue ( forward<U> ( v ) );
+
+		processSecondPass ( forward<UList> ( vs )... );
+	}
+	void processSecondPass () {}
 };
 
+
 /*
-	creates empty stack with default size
+	default constructor, creates empty queue with default size, and places head and tail of queue in the center of allocated memory
+	to allow for growth.
 */
 template<class _ElemType>
-constexpr stack<_ElemType>::stack () noexcept
+inline queue<_ElemType>::queue ()
 {
-	this->_ArrayLocation = ( _ElemType* ) malloc ( sizeof ( _ElemType ) * DEFAULT_ARRAYSIZE );
+	this->_ArrayLocation = ( _ElemType* ) malloc ( sizeof ( _ElemType ) * DEFAULT_QUEUE_SIZE );
+
+	this->_ArrayUpperBound = this->_ArrayLocation + DEFAULT_QUEUE_SIZE;
+
 	this->_ArraySize = 0;
-	this->_ArrayAvailableSize = DEFAULT_ARRAYSIZE;
-}
+	this->_ArrayAllocatedSize = DEFAULT_QUEUE_SIZE;
 
-
-/*
-	creates empty stack with predefined size.
-*/
-template<class _ElemType>
-constexpr stack<_ElemType>::stack ( size_t elements ) noexcept
-{
-	this->_ArrayLocation = ( _ElemType* ) malloc ( sizeof ( _ElemType ) * elements );
-	this->_ArraySize = 0;
+	this->_QueueHead = this->_ArrayLocation + ( DEFAULT_QUEUE_SIZE / 2 );
+	this->_QueueTail = _QueueHead;
 
 }
+
 /*
-	copy constructor.
+	adds an item to the rear of the queue. returns false if failiure.
 */
 template<class _ElemType>
-constexpr  stack<_ElemType>::stack ( stack<_ElemType>& copiedArr ) noexcept
+inline bool queue<_ElemType>::enqueue ( const _ElemType& item ) noexcept
 {
-	this->_ArrayLocation = ( _ElemType* ) malloc ( sizeof ( _ElemType ) * copiedArr._ArraySize );
-	this->_ArraySize = copiedArr._ArraySize;
-	this->_ArrayAvailableSize = copiedArr._ArrayAvailableSize;
-	rsize_t copySize = copiedArr._ArraySize;
+	if ( this->_ArraySize == 0 )
+	{
+		*this->_QueueTail = _ElemType ( item );
+		this->_ArraySize = 1;
+		return true;
+	}
 
-	memcpy_s (
-		this->_ArrayLocation ,
-		copySize ,
-		copiedArr._ArrayLocation ,
-		copySize
-	);
-}
-/*
-	push operation on the stack, adds an element to the top of the array
-*/
-template<class _ElemType>
-inline bool stack<_ElemType>::push ( _ElemType item ) noexcept
-{
-	assert ( this->_ArrayLocation != nullptr );
 
-	if ( this->_ArraySize >= ( this->_ArrayAvailableSize - 1 ) )
-		if ( !realloc () )
-			return false;
-
-	_ElemType* pushloc = ( this->_ArrayLocation ) + this->_ArraySize;
-	*pushloc = _ElemType ( item );
+	if ( ( this->_QueueTail - 1 ) <= this->_ArrayLocation )
+		realloc ();														// reallocate if not big enough to accomodate.
 
 	this->_ArraySize++;
+	this->_QueueTail--;
+	*this->_QueueTail = _ElemType ( item );
 	return true;
+
 }
-/*
-	pop operation on the stack, removes the top item from the array
-*/
+
 template<class _ElemType>
-inline _ElemType& stack<_ElemType>::pop () noexcept
+inline _ElemType queue<_ElemType>::dequeue () noexcept
 {
-	assert ( this->_ArrayLocation != nullptr );
-	assert ( this->_Arraysize > 0 );				// empty stack check
+	assert ( this->_ArraySize > 0 );
+	this->_QueueHead--;
 	this->_ArraySize--;
-	return ( _ElemType ) * ( this->_ArrayLocation + this->_ArraySize - 1 );
+	return *( this->_QueueHead + 1 );
 }
 
+template<class _ElemType>
+inline _ElemType queue<_ElemType>::operator[]( size_t i ) noexcept
+{
+	assert ( i < this->_ArraySize );
+	return *( this->begin () + i );
+}
+
+
+
 /*
-	reserves space for the array. reccomended for user if size is known as it allows it to be calculated at compile time.
+	Reallocates queue if too big for allocated space.
+*/
+template<class _ElemType>
+inline void queue<_ElemType>::realloc ()
+{
+	if ( this->_ArraySize >= this->_ArrayAllocatedSize )
+	{
+		_ElemType* tempArrayLocation = ( _ElemType* ) malloc ( sizeof ( _ElemType ) * this->_ArrayAllocatedSize * 2 );
+#ifdef DEBUG
+		memset ( tempArrayLocation , 0 , sizeof ( _ElemType ) * this->_ArrayAllocatedSize * 2 );					// zeros memory for debug
+#endif
+		size_t centerDistanceFromTail = ( this->_ArrayLocation + ( this->_ArrayAllocatedSize / 2 ) ) - this->_QueueTail;
+
+		memcpy_s (
+			tempArrayLocation + this->_ArrayAllocatedSize - centerDistanceFromTail ,
+			this->_ArraySize * sizeof ( _ElemType* ) ,
+			this->_QueueTail ,
+			this->_ArraySize * sizeof ( _ElemType* )
+		);
+		this->_ArrayAllocatedSize *= 2;
+		this->_ArrayUpperBound = tempArrayLocation + ( this->_ArrayAllocatedSize );
+
+		this->_QueueTail = tempArrayLocation + ( this->_ArrayAllocatedSize / 2 ) - centerDistanceFromTail;
+		this->_QueueHead = this->_QueueTail + this->_ArraySize - 1;
+
+		free ( this->_ArrayLocation );
+		this->_ArrayLocation = tempArrayLocation;
+	}
+
+	else
+	{
+		_ElemType* tempArrayLocation = ( _ElemType* ) malloc ( sizeof ( _ElemType ) * this->_ArrayAllocatedSize );
+#ifdef DEBUG
+		memset ( tempArrayLocation , 0 , sizeof ( _ElemType ) * this->_ArrayAllocatedSize );						// zeros memory for debug
+#endif
+		size_t centerDistanceFromTail = ( this->_ArrayLocation + ( this->_ArrayAllocatedSize / 2 ) ) - this->_QueueTail;
+
+		memcpy_s (
+			tempArrayLocation + ( this->_ArrayAllocatedSize ) - centerDistanceFromTail ,
+			this->_ArraySize * sizeof ( _ElemType* ) ,
+			this->_QueueTail ,
+			this->_ArraySize * sizeof ( _ElemType* )
+		);
+
+		this->_ArrayUpperBound = tempArrayLocation + ( this->_ArrayAllocatedSize );
+
+		this->_QueueTail = tempArrayLocation + ( this->_ArrayAllocatedSize ) - centerDistanceFromTail;
+		this->_QueueHead = this->_QueueTail + this->_ArraySize - 1;
+
+		free ( this->_ArrayLocation );
+		this->_ArrayLocation = tempArrayLocation;
+	}
+
+
+}
+/*
+	Performs rotation on data.
+	e.g. 12345 rotated becomes 51234
+							   ^----|
+*/
+template<class _ElemType>
+inline void queue<_ElemType>::rotate () noexcept
+{
+	this->enqueue ( this->dequeue () );
+}
+
+
+/*
+	reserves space for the queue. reccomended for user if size is known as it allows it to be calculated at compile time.
 */
 
 template<class _ElemType>
-inline constexpr bool stack<_ElemType>::reserve ( size_t newSize )
+inline constexpr bool queue<_ElemType>::reserve ( size_t newSize )
 {
-	_ElemType* newLocation = nullptr;
-	newLocation = ( _ElemType* ) ( malloc ( sizeof ( _ElemType ) * newSize ) );
-
-	if ( newLocation == nullptr )
-		return false;
+	assert ( newSize > this->_ArrayAllocatedSize );
+	_ElemType* tempArrayLocation = ( _ElemType* ) malloc ( sizeof ( _ElemType ) * newSize );
+#ifdef DEBUG
+	memset ( tempArrayLocation , 0 , sizeof ( _ElemType ) * this->_ArrayAllocatedSize * 2 );
+#endif
+	size_t centerDistanceFromTail = ( this->_ArrayLocation + ( this->_ArrayAllocatedSize / 2 ) ) - this->_QueueTail;
 
 	memcpy_s (
-		newLocation ,
-		sizeof ( _ElemType ) * this->_ArraySize ,
-		this->_ArrayLocation ,
-		sizeof ( _ElemType ) * this->_ArraySize
+		tempArrayLocation + this->_ArrayAllocatedSize - centerDistanceFromTail ,
+		this->_ArraySize * sizeof ( _ElemType* ) ,
+		this->_QueueTail ,
+		this->_ArraySize * sizeof ( _ElemType* )
 	);
+	this->_ArrayAllocatedSize = newSize;
+	this->_ArrayUpperBound = tempArrayLocation + ( this->_ArrayAllocatedSize );
+
+	this->_QueueTail = tempArrayLocation + ( this->_ArrayAllocatedSize / 2 ) - centerDistanceFromTail;
+	this->_QueueHead = this->_QueueTail + this->_ArraySize - 1;
 
 	free ( this->_ArrayLocation );
-	this->_ArrayLocation = newLocation;
-	this->_ArrayAvailableSize = newSize;
-	return true;
-}
-
-/*
-* Finds a new chunk of memory which the array can be placed in.
-*/
-template<class _ElemType>
-_NODISCARD inline bool stack<_ElemType>::realloc ()
-{
-	_ElemType* newLocation = nullptr;
-	newLocation = ( _ElemType* ) ( malloc ( sizeof ( _ElemType ) * this->_ArrayAvailableSize * 2 ) );
-
-	if ( newLocation == nullptr )
-		newLocation = ( _ElemType* ) ( malloc ( sizeof ( _ElemType ) * this->_ArrayAvailableSize + 1 ) );
-
-	if ( newLocation == nullptr )
-		return false;
-
-	memcpy_s (
-		newLocation ,
-		sizeof ( _ElemType ) * this->_ArrayAvailableSize * 2 ,
-		this->_ArrayLocation ,
-		sizeof ( _ElemType ) * this->_ArraySize
-	);
-
-	free ( this->_ArrayLocation );
-	this->_ArrayLocation = newLocation;
-	this->_ArrayAvailableSize *= 2;
+	this->_ArrayLocation = tempArrayLocation;
 	return true;
 }
 
 _STDLIB_END
-#endif /* !DYNAMIC_ARRAY_IMPL*/
+#endif /*QUEUE_IMPL*/
