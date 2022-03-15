@@ -2,39 +2,39 @@
 #define	CIRCULAR_QUEUE_IMPL
 
 #include "helpers.h"
-#define DEBUG
+
 _STDLIB_BEGIN
 
-template <class _ElemType, size_t size>
-class circularQueue : public arr<_ElemType, size>
+template <class _ElemType , size_t size>
+class circularQueue : public arr<_ElemType , size>
 {
 public:
-	circularQueue<_ElemType, size> ( size_t queueSize );
+	circularQueue<_ElemType , size> ( size_t queueSize );
 
-			bool		enqueue ( const _ElemType& item )				noexcept;
-			_ElemType	dequeue ()									noexcept;
-			_ElemType	operator[]( size_t i )						noexcept;
-			void		rotate ()									noexcept;
+	bool		enqueue ( const _ElemType& item )				noexcept;
+	_ElemType	dequeue ()									noexcept;
+	_ElemType	operator[]( size_t i )						noexcept;
+	void		rotate ()									noexcept;
 
 
 
-			using		iterator = _ElemType*;
-			_NODISCARD	iterator		begin ()	const noexcept
-			{
-				return this->_ArrayLocation + _QueueHead;
-			}
-			_NODISCARD	iterator		end ()	const noexcept
-			{
-				return this->_ArrayLocation + _QueueTail + 1;
-			}
+	using		iterator = _ElemType*;
+	_NODISCARD	iterator		begin ()	const noexcept
+	{
+		return this->_ArrayLocation + _QueueHead;
+	}
+	_NODISCARD	iterator		end ()	const noexcept
+	{
+		return this->_ArrayLocation + _QueueTail + 1;
+	}
 public:
 
 
-_NODISCARD  void		realloc ();
-			bool		reserve ( size_t newSize );
+	_NODISCARD  void		realloc ();
+	bool		reserve ( size_t newSize );
 
-			int 		_QueueHead;
-			int 		_QueueTail;
+	int 		_QueueHead;
+	int 		_QueueTail;
 
 
 
@@ -78,8 +78,8 @@ private:
 
 };
 
-template<class _ElemType, size_t size>
-inline circularQueue<_ElemType, size>::circularQueue ( size_t queueSize )
+template<class _ElemType , size_t size>
+inline circularQueue<_ElemType , size>::circularQueue ( size_t queueSize )
 {
 	this->_ArrayLocation = ( _ElemType* ) malloc ( sizeof ( _ElemType ) * queueSize );
 #ifdef DEBUG
@@ -92,10 +92,11 @@ inline circularQueue<_ElemType, size>::circularQueue ( size_t queueSize )
 }
 
 
-template<class _ElemType, size_t size>
-inline bool circularQueue<_ElemType, size>::enqueue ( const _ElemType& item ) noexcept
+template<class _ElemType , size_t size>
+inline bool circularQueue<_ElemType , size>::enqueue ( const _ElemType& item ) noexcept
 {
-	if ( _QueueHead == _QueueTail && this->_ArraySize > 1 )
+
+	if ( _QueueHead == _QueueTail && this->_ArraySize > 1 || size <= this->_ArraySize )
 		return false;
 
 	else if ( this->_QueueHead == -1 )
@@ -135,15 +136,15 @@ inline bool circularQueue<_ElemType, size>::enqueue ( const _ElemType& item ) no
 
 }
 
-template<class _ElemType, size_t size>
-inline void circularQueue<_ElemType, size>::rotate () noexcept
+template<class _ElemType , size_t size>
+inline void circularQueue<_ElemType , size>::rotate () noexcept
 {
 	this->enqueue ( this->dequeue () );
 }
 
 
-template<class _ElemType, size_t size>
-inline _ElemType circularQueue<_ElemType, size>::dequeue () noexcept
+template<class _ElemType , size_t size>
+inline _ElemType circularQueue<_ElemType , size>::dequeue () noexcept
 {
 
 
@@ -163,8 +164,8 @@ inline _ElemType circularQueue<_ElemType, size>::dequeue () noexcept
 	return data;
 }
 
-template<class _ElemType, size_t size>
-inline _ElemType circularQueue<_ElemType, size>::operator[]( size_t i ) noexcept
+template<class _ElemType , size_t size>
+inline _ElemType circularQueue<_ElemType , size>::operator[]( size_t i ) noexcept
 {
 	assert ( this->_ArraySize != 0 );
 	assert ( i < this->_ArraySize );
