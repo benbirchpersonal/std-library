@@ -2,9 +2,9 @@
 #define HELPERS_INCLUDED
 
 #include <memory>				// The only include in the project (hopefully)
-
+//#define DEBUG
 #ifdef DEBUG
-#define assert(EX) if(!(EX)) printf("assertion failed: Line %i", __LINE__);
+#define assert(EX) if(!(EX)) printf("assertion failed: Line %i in %s", __LINE__, __FILE__);
 
 #else
 #define assert(EX) (void)(EX)
@@ -17,6 +17,7 @@
 // Forward declaration of classes.
 
 _STDLIB_BEGIN
+
 
 class str;
 
@@ -36,7 +37,7 @@ using list = stack<_ElemType>;
 template<class _ElemType>
 class queue;
 
-template <class _ElemType , size_t size>
+template <class _ElemType, size_t size>
 class circularQueue;
 
 
