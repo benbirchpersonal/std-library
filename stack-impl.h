@@ -6,24 +6,34 @@
 
 _STDLIB_BEGIN
 template <class _ElemType>
-class queue : public arr<_ElemType, 0>
+class queue : public arr<_ElemType , 0>
 {
 public:
 	queue<_ElemType> ();
 
-	bool						enqueue ( const _ElemType& item )			noexcept;
+	bool						enqueue ( const _ElemType& item )				noexcept;
 	_ElemType					dequeue ()									noexcept;
 	_ElemType					operator[]( size_t i )						noexcept;
 	void						rotate ()									noexcept;
 
 	using		iterator = _ElemType*;
-	_NODISCARD	iterator		begin ()									const noexcept
+	_NODISCARD	iterator		begin ()	const noexcept
 	{
 		return _QueueTail;
 	}
-	_NODISCARD	iterator		end ()										const noexcept
+	_NODISCARD	iterator		end ()	const noexcept
 	{
-		return _QueueHead + 1;
+		return _QueueHead +1;
+	}
+
+
+	_NODISCARD	const _ElemType& first()	const noexcept
+	{
+		return *_QueueHead;
+	}
+	_NODISCARD	const _ElemType& last ()	const noexcept
+	{
+		return *( _QueueTail);
 	}
 
 protected:
@@ -53,7 +63,7 @@ public:
 		to prevent issues and unexpected behaviour.
 	*/
 
-	template <typename... UList , REQUIRES ( nonrrow_convertible<_ElemType , UList...>::value )>		// template magic - see helpers.h
+	template <typename... UList , REQUIRES ( nonarrow_convertible<_ElemType , UList...>::value )>		// template magic - see helpers.h
 	queue ( UList&&... vs )
 	{
 		this->_ElemSize = sizeof ( _ElemType );
